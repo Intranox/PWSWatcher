@@ -28,68 +28,102 @@ class _ThemeSettingsCardState extends State<ThemeSettingsCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
-      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Row(
+              children: [
+                Icon(Icons.palette_outlined,
+                    color: Theme.of(context).primaryColor, size: 20),
+                const SizedBox(width: 10),
+                Text(
+                  "Theme",
+                  style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                _buildThemeChip(0, "Day", const Color(0xFF1565C0)),
+                _buildThemeChip(1, "Evening", const Color(0xFFE65100)),
+                _buildThemeChip(2, "Night", const Color(0xFF311B92)),
+                _buildThemeChip(3, "Storm", const Color(0xFF37474F)),
+                _buildThemeChip(4, "AMOLED", Colors.black),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeChip(int index, String label, Color color) {
+    final bool selected = _themeSelection[index];
+    return GestureDetector(
+      onTap: () => _onThemeSelected(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? color : color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: selected ? color : color.withOpacity(0.3),
+            width: selected ? 0 : 1.5,
+          ),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                      color: color.withOpacity(0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4))
+                ]
+              : [],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                "Theme",
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headline6,
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: selected ? Colors.white : color,
+                shape: BoxShape.circle,
               ),
             ),
-            Container(
-              alignment: Alignment.center,
-              child: ToggleButtons(
-                children: [
-                  ThemeToggleButton("Day", Colors.lightBlue),
-                  ThemeToggleButton("Evening", Colors.deepOrange),
-                  ThemeToggleButton("Night", Colors.deepPurple),
-                  ThemeToggleButton("Grey", Colors.blueGrey),
-                  ThemeToggleButton("Blacked", Colors.black),
-                ],
-                onPressed: (int index) async {
-                  for (int buttonIndex = 0;
-                      buttonIndex < _themeSelection.length;
-                      buttonIndex++) {
-                    if (buttonIndex == index) {
-                      _themeSelection[buttonIndex] = true;
-                    } else {
-                      _themeSelection[buttonIndex] = false;
-                    }
-                  }
-                  switch (index) {
-                    case 0:
-                      widget.themeService!.setTheme("day");
-                      break;
-                    case 1:
-                      widget.themeService!.setTheme("evening");
-                      break;
-                    case 2:
-                      widget.themeService!.setTheme("night");
-                      break;
-                    case 3:
-                      widget.themeService!.setTheme("grey");
-                      break;
-                    case 4:
-                      widget.themeService!.setTheme("blacked");
-                      break;
-                  }
-                  setState(() {});
-                },
-                isSelected: _themeSelection,
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: selected ? Colors.white : color,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _onThemeSelected(int index) {
+    setState(() {
+      for (int i = 0; i < _themeSelection.length; i++) {
+        _themeSelection[i] = i == index;
+      }
+    });
+    const themes = ["day", "evening", "night", "grey", "blacked"];
+    widget.themeService!.setTheme(themes[index]);
   }
 }
