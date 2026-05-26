@@ -34,7 +34,7 @@ class _SourcesSettingsCardState extends State<SourcesSettingsCard> {
             child: Text(
               "PWS",
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           ListView.separated(
@@ -51,13 +51,13 @@ class _SourcesSettingsCardState extends State<SourcesSettingsCard> {
                 ),
                 title: Text(
                   widget.sources[position].name,
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: Theme.of(context).textTheme.titleMedium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
                   widget.sources[position].url,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

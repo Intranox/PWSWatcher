@@ -208,7 +208,7 @@ class VariableRow extends StatelessWidget {
       maxLines: 1,
       style: Theme.of(context)
           .textTheme
-          .headline5!
+          .headlineSmall!
           .copyWith(color: Theme.of(context).colorScheme.secondary),
     );
     final unitText = Text(
@@ -216,7 +216,7 @@ class VariableRow extends StatelessWidget {
       maxLines: 1,
       style: Theme.of(context)
           .textTheme
-          .subtitle1!
+          .titleMedium!
           .copyWith(color: Theme.of(context).colorScheme.secondary),
     );
 

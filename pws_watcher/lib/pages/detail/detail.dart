@@ -49,7 +49,7 @@ class _DetailPageState extends State<DetailPage> {
             title: Text(
               "Detail page",
               maxLines: 1,
-              style: Theme.of(context).textTheme.headline5!.copyWith(color: Colors.white),
+              style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.white),
             ),
             centerTitle: true,
           ),
@@ -61,12 +61,12 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: InputDecoration(
                     labelText: "Search",
                     labelStyle: TextStyle(
-                      fontSize: Theme.of(context).textTheme.headline6!.fontSize,
+                      fontSize: Theme.of(context).textTheme.titleLarge!.fontSize,
                     ),
                   ),
                   controller: controller,
                   style: TextStyle(
-                    fontSize: Theme.of(context).textTheme.headline6!.fontSize,
+                    fontSize: Theme.of(context).textTheme.titleLarge!.fontSize,
                   ),
                 ),
               ),
@@ -83,11 +83,11 @@ class _DetailPageState extends State<DetailPage> {
                       return ListTile(
                         title: Text(
                           key!,
-                          style: Theme.of(context).textTheme.headline6!.copyWith(fontWeight: FontWeight.normal),
+                          style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal),
                         ),
                         subtitle: Text(
                           widget.data.entries.elementAt(position).value,
-                          style: Theme.of(context).textTheme.bodyText2,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       );
                     else

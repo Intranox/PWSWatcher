@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pws_watcher/get_it_setup.dart';
-import 'package:pws_watcher/pages/settings/widgets/theme_toggle_button.dart';
 import 'package:pws_watcher/services/theme_service.dart';
 
 class ThemeSettingsCard extends StatefulWidget {
@@ -43,7 +42,7 @@ class _ThemeSettingsCardState extends State<ThemeSettingsCard> {
                 const SizedBox(width: 10),
                 Text(
                   "Theme",
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.3,
                       ),

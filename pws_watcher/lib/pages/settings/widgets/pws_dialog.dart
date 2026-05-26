@@ -62,8 +62,8 @@ class _PWSDialogState extends State<PWSDialog> {
 
     _shouldShowcase().then((shouldShow) {
       if (shouldShow) {
-        WidgetsBinding.instance!.addPostFrameCallback(
-            (_) => ShowCaseWidget.of(_showCaseContext)!.startShowCase([_urlKey, _refreshKey, _snapshotUrlKey]));
+        WidgetsBinding.instance.addPostFrameCallback(
+            (_) => ShowCaseWidget.of(_showCaseContext).startShowCase([_urlKey, _refreshKey, _snapshotUrlKey]));
       }
     });
 
@@ -201,7 +201,7 @@ class _PWSDialogState extends State<PWSDialog> {
                   ),
                   Text(
                     "You can specify which date format to use to improve date parsing in app and widget.\ndd = day of month\nMM = month\nyyyy = year\nyy = year (short)",
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -210,16 +210,16 @@ class _PWSDialogState extends State<PWSDialog> {
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Theme.of(context).buttonTheme.colorScheme?.background,
-                primary: Theme.of(context).buttonTheme.colorScheme?.primary,
+                backgroundColor: Theme.of(context).labelLargeTheme.colorScheme?.background,
+                foregroundColor: Theme.of(context).labelLargeTheme.colorScheme?.primary,
               ),
               child: Text("Help"),
               onPressed: _openHelp,
             ),
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Theme.of(context).buttonTheme.colorScheme?.background,
-                primary: Theme.of(context).buttonTheme.colorScheme?.primary,
+                backgroundColor: Theme.of(context).labelLargeTheme.colorScheme?.background,
+                foregroundColor: Theme.of(context).labelLargeTheme.colorScheme?.primary,
               ),
               child: Text("Close"),
               onPressed: () => Navigator.of(context).pop(),
@@ -275,10 +275,10 @@ class _PWSDialogState extends State<PWSDialog> {
 
   _openHelp() async {
     const url = "https://bertolotti.dev/PWSWatcher/compatibilities";
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
     } else {
-      print("Could not launch" + url);
+      print("Could not launch $url");
     }
   }
 

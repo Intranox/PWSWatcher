@@ -56,14 +56,14 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             child: Text(
               "Visibility",
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           SwitchListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Current weather icon visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityCurrentWeatherIcon,
             onChanged: (value) async {
@@ -78,7 +78,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Update timer visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityUpdateTimer,
             onChanged: (value) async {
@@ -93,7 +93,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Wind speed visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityWindSpeed,
             onChanged: (value) async {
@@ -108,7 +108,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Pressure visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityPressure,
             onChanged: (value) async {
@@ -123,7 +123,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Wind direction visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityWindDirection,
             onChanged: (value) async {
@@ -138,7 +138,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Humidity visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityHumidity,
             onChanged: (value) async {
@@ -153,7 +153,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Temperature (small) visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityTemperature,
             onChanged: (value) async {
@@ -168,7 +168,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Wind chill visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityWindChill,
             onChanged: (value) async {
@@ -183,7 +183,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Rain visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityRain,
             onChanged: (value) async {
@@ -198,7 +198,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Dew visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityDew,
             onChanged: (value) async {
@@ -213,7 +213,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Sunrise hour visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilitySunrise,
             onChanged: (value) async {
@@ -228,7 +228,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Sunset hour visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilitySunset,
             onChanged: (value) async {
@@ -243,7 +243,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Moonrise hour visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityMoonrise,
             onChanged: (value) async {
@@ -258,7 +258,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Text(
               "Moonset hour visibility",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             value: _visibilityMoonset,
             onChanged: (value) async {
@@ -437,7 +437,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
         title: Text(
           _customData[index].name,
-          style: Theme.of(context).textTheme.subtitle1,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         trailing: Container(
           child: Row(
@@ -484,7 +484,7 @@ class _VisibilitySettingsCardState extends State<VisibilitySettingsCard> {
           child: Center(
             child: Text(
               'Add custom data',
-              style: Theme.of(context).textTheme.button!.copyWith(
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     color: Theme.of(context).colorScheme.secondary,
                   ),
             ),

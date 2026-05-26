@@ -68,47 +68,47 @@ class _UnitSettingsCardState extends State<UnitSettingsCard> {
               child: Text(
                 "Units of measure",
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
             Text(
               "Wind speed unit:",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 10.0),
             _windSpeedUnitSelector(),
             SizedBox(height: 20.0),
             Text(
               "Rain unit:",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 10.0),
             _rainUnitSelector(),
             SizedBox(height: 20.0),
             Text(
               "Pressure unit:",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 10.0),
             _pressUnitSelector(),
             SizedBox(height: 20.0),
             Text(
               "Temperature unit:",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 10.0),
             _tempUnitSelector(),
             SizedBox(height: 20.0),
             Text(
               "Dew point unit:",
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 10.0),
             _dewUnitSelector(),
             SizedBox(height: 20.0),
             Text(
               "* Some input source formats may not guarantee the correct functioning of the unit conversion.",
-              style: Theme.of(context).textTheme.caption,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
@@ -286,7 +286,7 @@ class _UnitSettingsCardState extends State<UnitSettingsCard> {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         unit,
-        style: Theme.of(context).textTheme.subtitle2!.copyWith(
+        style: Theme.of(context).textTheme.titleSmall!.copyWith(
               color: theme.brightness == Brightness.dark ? Colors.white : Colors.black,
             ),
       ),

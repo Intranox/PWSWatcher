@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
-                    .subtitle1!
+                    .titleMedium!
                     .copyWith(color: Colors.white, letterSpacing: 0.5),
               ),
             ),

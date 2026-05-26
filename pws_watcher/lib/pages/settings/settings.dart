@@ -153,7 +153,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     if (sources == null || sources.isEmpty) {
       _shouldShowcase().then((shouldShow) {
         if (shouldShow) {
-          ShowCaseWidget.of(_showCaseContext)!.startShowCase([_fabKey]);
+          ShowCaseWidget.of(_showCaseContext).startShowCase([_fabKey]);
         }
       });
     } else {
@@ -195,7 +195,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("showcase_2", false);
 
-    ShowCaseWidget.of(_showCaseContext)!.startShowCase([_fabKey]);
+    ShowCaseWidget.of(_showCaseContext).startShowCase([_fabKey]);
   }
 
   // WIDGETS
@@ -236,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
       key: _fabKey,
       title: "Add PWS",
       description: "Tap here to add your PWS info",
-      shapeBorder: CircleBorder(),
+      toShape: ShapeBorderClipper(shape: CircleBorder()),
       child: FloatingActionButton.extended(
         onPressed: _addSource,
         elevation: 4,

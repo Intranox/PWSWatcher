@@ -50,7 +50,7 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print(Theme.of(context).buttonTheme.colorScheme);
+    print(Theme.of(context).labelLargeTheme.colorScheme);
     final double screenWidth = MediaQuery.of(context).size.width;
     final CustomDataDialogMode mode = widget.mode;
 
@@ -130,8 +130,8 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: Theme.of(context).buttonTheme.colorScheme?.background,
-            primary: Theme.of(context).buttonTheme.colorScheme?.primary,
+            backgroundColor: Theme.of(context).labelLargeTheme.colorScheme?.background,
+            foregroundColor: Theme.of(context).labelLargeTheme.colorScheme?.primary,
           ),
           child: Text("Close"),
           onPressed: () => Navigator.of(context).pop(),
@@ -151,7 +151,7 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
   // FUNCTIONS
 
   _pickIcon() async {
-    IconData? icon = await showIconPicker(
+    IconData? icon = await FlutterIconPicker.showIconPicker(
       context,
       iconPackMode: IconPack.material,
       iconColor: Theme.of(context).primaryColor,

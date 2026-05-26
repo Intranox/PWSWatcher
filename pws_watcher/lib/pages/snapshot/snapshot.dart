@@ -35,7 +35,7 @@ class _SnapshotPageState extends State<SnapshotPage> {
   @override
   void initState() {
     super.initState();
-    imageCache!.clear();
+    imageCache.clear();
   }
 
   @override
@@ -60,7 +60,7 @@ class _SnapshotPageState extends State<SnapshotPage> {
                 backgroundColor: Colors.black,
                 title: Text(
                   widget.title!,
-                  style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
                 ),
                 actions: <Widget>[
                   IconButton(
@@ -87,7 +87,7 @@ class _SnapshotPageState extends State<SnapshotPage> {
                       child: Text(
                         widget.description!,
                         textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white),
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
                       ),
                     ),
                   )
