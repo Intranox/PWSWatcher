@@ -203,21 +203,27 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   Widget _buildAppBar() {
     return AppBar(
       systemOverlayStyle: SystemUiOverlayStyle.light,
+      elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.white),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
         onPressed: () => _closeSettings(),
       ),
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.help, color: Colors.white),
+          icon: const Icon(Icons.help_outline_rounded, color: Colors.white, size: 22),
           onPressed: () => _showShowcase(),
           tooltip: "Show tutorial",
         )
       ],
-      title: Text(
+      title: const Text(
         "Settings",
         maxLines: 1,
-        style: Theme.of(context).textTheme.headline5!.copyWith(color: Colors.white),
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w300,
+          fontSize: 22,
+          letterSpacing: 1.0,
+        ),
       ),
       centerTitle: true,
     );
@@ -233,9 +239,11 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
       shapeBorder: CircleBorder(),
       child: FloatingActionButton.extended(
         onPressed: _addSource,
-        elevation: 2,
-        icon: Icon(Icons.add),
-        label: Text("add"),
+        elevation: 4,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text("Add source",
+            style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 0.5)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
     );
   }
