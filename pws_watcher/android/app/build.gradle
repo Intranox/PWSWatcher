@@ -38,7 +38,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.zem.pwswatcher"
+        applicationId "com.github.intranox.pws_watcher"
         minSdkVersion 19
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
