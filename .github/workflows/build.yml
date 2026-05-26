@@ -1,0 +1,143 @@
+name: Build
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ master, main ]
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # 1. Analysis & tests
+  # ──────────────────────────────────────────────────────────────────────────
+  analyze:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        working-directory: pws_watcher
+        run: flutter pub get
+
+      - name: Verify formatting
+        working-directory: pws_watcher
+        run: dart format --output=none --set-exit-if-changed .
+        continue-on-error: true   # warn only — remove to enforce
+
+      - name: Analyze project
+        working-directory: pws_watcher
+        run: flutter analyze --no-fatal-infos
+
+      # Uncomment when tests are added
+      # - name: Run tests
+      #   working-directory: pws_watcher
+      #   run: flutter test
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 2. Build debug APK (no signing required)
+  # ──────────────────────────────────────────────────────────────────────────
+  build-debug:
+    name: Build Debug APK
+    needs: analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        working-directory: pws_watcher
+        run: flutter pub get
+
+      - name: Build debug APK
+        working-directory: pws_watcher
+        run: flutter build apk --debug --no-tree-shake-icons
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk-${{ github.sha }}
+          path: pws_watcher/build/app/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. Build release APK (only on master / main, requires keystore secrets)
+  # ──────────────────────────────────────────────────────────────────────────
+  build-release:
+    name: Build Release APK
+    needs: analyze
+    # Only run on the main/master branch where signing secrets are available
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        working-directory: pws_watcher
+        run: flutter pub get
+
+      - name: Decode keystore
+        working-directory: pws_watcher
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > key.jks
+
+      - name: Build release APKs (split per ABI)
+        working-directory: pws_watcher
+        run: |
+          flutter build apk \
+            --release \
+            --split-per-abi \
+            --no-tree-shake-icons
+        env:
+          UPLOAD_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASS }}
+
+      - name: Build App Bundle
+        working-directory: pws_watcher
+        run: flutter build appbundle --release --no-tree-shake-icons
+        env:
+          UPLOAD_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASS }}
+
+      - name: Upload release APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apks-${{ github.sha }}
+          path: pws_watcher/build/app/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab-${{ github.sha }}
+          path: pws_watcher/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+  
