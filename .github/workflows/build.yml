@@ -1,6 +1,7 @@
 name: Build
 
 on:
+  workflow_dispatch:        # ← abilita il pulsante "Run workflow" su GitHub
   push:
     branches: [ "**" ]
   pull_request:
@@ -140,4 +141,3 @@ jobs:
           name: release-aab-${{ github.sha }}
           path: pws_watcher/build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
-  
