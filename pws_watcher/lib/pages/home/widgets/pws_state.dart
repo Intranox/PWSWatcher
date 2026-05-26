@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:pws_watcher/model/custom_data.dart';
 import 'package:pws_watcher/model/parsing_utilities.dart';
 import 'package:pws_watcher/model/pws.dart';
-import 'package:pws_watcher/model/state\.dart';
+import 'package:pws_watcher/model/state.dart';
 import 'package:pws_watcher/model/value_setting.dart';
 import 'package:pws_watcher/pages/detail/detail.dart';
 import 'package:pws_watcher/pages/home/widgets/pws_state_header.dart';
@@ -18,7 +19,7 @@ import 'pws_temperature_row.dart';
 import 'snapshot_preview.dart';
 
 class PWSStatePage extends StatefulWidget {
-  PWSStatePage(this.source);
+  const PWSStatePage(this.source, {Key? key}) : super(key: key);
 
   final PWS source;
 
@@ -27,7 +28,8 @@ class PWSStatePage extends StatefulWidget {
 }
 
 class _PWSStatePageState extends State<PWSStatePage> {
-  GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey();
+  GlobalKey<RefreshIndicatorState> _refreshKey =
+      GlobalKey<RefreshIndicatorState>();
   late ParsingService _parsingService;
 
   Map<String?, bool?> _visibilityMap = {};
@@ -37,25 +39,19 @@ class _PWSStatePageState extends State<PWSStatePage> {
 
   @override
   void initState() {
-    // Retrieves visibility preferences
     _retrievePreferences();
-
-    // Initialize the parsing service with this PWS as source
     _parsingService = ParsingService(
       widget.source,
       provider.Provider.of<ApplicationState>(context, listen: false),
     );
-
     super.initState();
   }
 
   @override
   void didUpdateWidget(PWSStatePage oldWidget) {
     if (oldWidget.source != widget.source) {
-      // If source changed, update the parsing service source so it continues to work
       _parsingService.setSource(widget.source);
     }
-
     super.didUpdateWidget(oldWidget);
   }
 
@@ -69,79 +65,81 @@ class _PWSStatePageState extends State<PWSStatePage> {
         return StreamBuilder(
           stream: _parsingService.allVariables$,
           builder: (context, dataSnapshot) {
-            Widget emptyPage = _buildPage([
-              SizedBox(height: 50.0),
+            final emptyPage = _buildPage([
+              const SizedBox(height: 60),
               Center(
-                child: Container(
-                  height: 100.0,
-                  width: 100.0,
-                  child: CircularProgressIndicator(),
+                child: SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.white.withOpacity(0.7)),
+                  ),
                 ),
-              )
+              ),
             ]);
 
-            if (snapshot.hasError || !snapshot.hasData || dataSnapshot.hasError || !dataSnapshot.hasData) {
-              // Return an empty page with a spinning indicator
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                dataSnapshot.hasError ||
+                !dataSnapshot.hasData) {
               return emptyPage;
             }
 
-            Map<String, String> interestVariables = snapshot.data as Map<String, String>;
-            Map<String, String>? fullData = dataSnapshot.data as Map<String, String>?;
+            final interestVariables =
+                snapshot.data as Map<String, String>;
+            final fullData = dataSnapshot.data as Map<String, String>?;
 
-            // Retrieve significant data from parsing service
-            var location = interestVariables["location"] ?? "Location";
-            var datetime = interestVariables["datetime"] ?? "--/--/---- --:--:--";
-            var temperature = interestVariables["temperature"] ?? "-";
-            var tempUnit = interestVariables["tempUnit"] ?? "°C";
+            final location = interestVariables["location"] ?? "Location";
+            final datetime =
+                interestVariables["datetime"] ?? "--/--/---- --:--:--";
+            final temperature = interestVariables["temperature"] ?? "-";
+            final tempUnit = interestVariables["tempUnit"] ?? "°C";
 
-            // Retrieve current condition icon
             String? currentConditionAsset;
             try {
-              var currentConditionIndex = (int.parse(interestVariables["currentConditionIndex"] ?? "-1"));
-              if (currentConditionIndex >= 0 &&
-                  currentConditionIndex < currentConditionDesc.length &&
-                  currentConditionMapping.containsKey(currentConditionDesc[currentConditionIndex])) {
+              var idx =
+                  int.parse(interestVariables["currentConditionIndex"] ?? "-1");
+              if (idx >= 0 &&
+                  idx < currentConditionDesc.length &&
+                  currentConditionMapping
+                      .containsKey(currentConditionDesc[idx])) {
                 currentConditionAsset = getCurrentConditionAsset(
-                  currentConditionMapping[currentConditionDesc[currentConditionIndex]],
+                  currentConditionMapping[currentConditionDesc[idx]],
                 );
               }
-            } catch (e) {}
+            } catch (_) {}
 
-            bool thereIsUrl = widget.source.snapshotUrl != null && widget.source.snapshotUrl!.trim().isNotEmpty;
+            bool thereIsUrl = widget.source.snapshotUrl != null &&
+                widget.source.snapshotUrl!.trim().isNotEmpty;
 
-            return FutureBuilder(
+            return FutureBuilder<List<Widget>>(
               future: _buildValuesTable(interestVariables),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<List<Widget>> snapshot,
-              ) {
-                if (snapshot.hasError || !snapshot.hasData) {
-                  return emptyPage;
-                }
+              builder: (BuildContext context, AsyncSnapshot<List<Widget>> snap) {
+                if (snap.hasError || !snap.hasData) return emptyPage;
 
-                return _buildPage(
-                  [
-                    SizedBox(height: 20.0),
-                    PWSStateHeader(
-                      location,
-                      datetime,
-                    ),
-                    SizedBox(height: 30.0),
-                    PWSTemperatureRow(
-                      '$temperature$tempUnit',
-                      asset: _visibilityCurrentWeatherIcon ? currentConditionAsset : null,
-                    ),
-                    SizedBox(height: 50.0),
-                  ]
-                    ..addAll(snapshot.data!)
-                    ..addAll(_buildCustomDataValues(fullData))
-                    ..addAll([
-                      thereIsUrl ? SizedBox(height: 30) : Container(),
-                      thereIsUrl ? SnapshotPreview(widget.source) : Container(),
-                      SizedBox(height: thereIsUrl ? 20.0 : 40.0),
-                      _buildDetailButton(),
-                    ]),
-                );
+                return _buildPage([
+                  const SizedBox(height: 16),
+                  PWSStateHeader(location, datetime),
+                  const SizedBox(height: 24),
+                  PWSTemperatureRow(
+                    '$temperature$tempUnit',
+                    asset: _visibilityCurrentWeatherIcon
+                        ? currentConditionAsset
+                        : null,
+                  ),
+                  const SizedBox(height: 24),
+                  ...snap.data!,
+                  ..._buildCustomDataValues(fullData),
+                  if (thereIsUrl) ...[
+                    const SizedBox(height: 24),
+                    SnapshotPreview(widget.source),
+                  ],
+                  const SizedBox(height: 24),
+                  _buildDetailButton(),
+                  const SizedBox(height: 16),
+                ]);
               },
             );
           },
@@ -150,27 +148,24 @@ class _PWSStatePageState extends State<PWSStatePage> {
     );
   }
 
-  // FUNCTIONS
+  // ── Logic ────────────────────────────────────────────────────────────────────
 
   _checkUpdatePreferences() {
-    ApplicationState state = provider.Provider.of<ApplicationState>(context, listen: false);
+    ApplicationState state =
+        provider.Provider.of<ApplicationState>(context, listen: false);
     if (state.updatePreferences) {
-      // If preferences changed force an update
       state.updatePreferences = false;
-
       _retrievePreferences();
-
       _parsingService.setApplicationState(state);
     }
   }
 
   Future<void> _refresh() async {
     _refreshKey.currentState!.show();
-
     await _parsingService.updateData(force: true);
   }
 
-  _openDetailPage() async {
+  _openDetailPage() {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -182,43 +177,37 @@ class _PWSStatePageState extends State<PWSStatePage> {
     );
   }
 
-  Future<Null> _retrievePreferences() async {
+  Future<void> _retrievePreferences() async {
     List<ValueSetting> settings = await _retrieveValueSettings();
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
-      _visibilityCurrentWeatherIcon = prefs.getBool("visibilityCurrentWeatherIcon") ?? true;
+      _visibilityCurrentWeatherIcon =
+          prefs.getBool("visibilityCurrentWeatherIcon") ?? true;
       _visibilityUpdateTimer = prefs.getBool("visibilityUpdateTimer") ?? true;
-    } catch (e) {
+    } catch (_) {
       _visibilityCurrentWeatherIcon = true;
       _visibilityUpdateTimer = true;
-
-      // If there's an exception clear the settings in preferences
       prefs.remove("visibilityCurrentWeatherIcon");
       prefs.remove("visibilityUpdateTimer");
     }
 
     try {
-      // Populate visibility map
       _visibilityMap.clear();
-      for (ValueSetting setting in settings) {
-        _visibilityMap[setting.visibilityVarName] =
-            prefs.getBool(setting.visibilityVarName!) ?? setting.visibilityDefaultValue;
+      for (var s in settings) {
+        _visibilityMap[s.visibilityVarName] =
+            prefs.getBool(s.visibilityVarName!) ?? s.visibilityDefaultValue;
       }
-    } catch (e) {
+    } catch (_) {
       _visibilityMap.clear();
-
-      // If there's an exception clear the settings in preferences
-      for (ValueSetting setting in settings) {
-        prefs.remove(setting.visibilityVarName!);
+      for (var s in settings) {
+        prefs.remove(s.visibilityVarName!);
       }
     }
 
     try {
       _customData.clear();
       List<String> customDataJSON = prefs.getStringList("customData") ?? [];
-
-      // Populate CustomData list from a list of JSONs stored in shared prefs
       for (String dataJSON in customDataJSON) {
         dynamic data = jsonDecode(dataJSON);
         IconData? icon = data["icon"] != null
@@ -229,17 +218,11 @@ class _PWSStatePageState extends State<PWSStatePage> {
                 matchTextDirection: data["icon"]["matchTextDirection"],
               )
             : null;
-
         _customData.add(CustomData(
-          name: data["name"],
-          unit: data["unit"],
-          icon: icon,
-        ));
+            name: data["name"], unit: data["unit"], icon: icon));
       }
-    } catch (e) {
+    } catch (_) {
       _customData.clear();
-
-      // If there's an exception clear the settings in preferences
       prefs.remove("customData");
     }
 
@@ -247,141 +230,138 @@ class _PWSStatePageState extends State<PWSStatePage> {
   }
 
   Future<List<ValueSetting>> _retrieveValueSettings() async {
-    // Read values settings from assets
     String jsonString = await rootBundle.loadString("assets/values.json");
     List<dynamic> jsonResponse = jsonDecode(jsonString);
-
-    // Parse the JSON
-    List<ValueSetting> toReturn = [];
-    for (dynamic valueSettings in jsonResponse) {
-      toReturn.add(
-        ValueSetting(
-          name: valueSettings['name'],
-          asset: valueSettings['asset'],
-          valueVarName: valueSettings['valueVarName'],
-          unitVarName: valueSettings['unitVarName'],
-          visibilityVarName: valueSettings['visibilityVarName'],
-          valueDefaultValue: valueSettings['valueDefaultValue'],
-          unitDefaultValue: valueSettings['unitDefaultValue'],
-          visibilityDefaultValue: valueSettings['visibilityDefaultValue'],
-        ),
-      );
-    }
-
-    return toReturn;
+    return jsonResponse
+        .map((v) => ValueSetting(
+              name: v['name'],
+              asset: v['asset'],
+              valueVarName: v['valueVarName'],
+              unitVarName: v['unitVarName'],
+              visibilityVarName: v['visibilityVarName'],
+              valueDefaultValue: v['valueDefaultValue'],
+              unitDefaultValue: v['unitDefaultValue'],
+              visibilityDefaultValue: v['visibilityDefaultValue'],
+            ))
+        .toList();
   }
 
-  // WIDGETS
+  // ── Widgets ──────────────────────────────────────────────────────────────────
 
   Widget _buildUpdateIndicator(PWS source) {
     if (source.autoUpdateInterval == 0) {
-      // Show the manual update button
-      return Align(
-        alignment: Alignment.topLeft,
-        child: IconButton(
-          tooltip: "Update",
-          icon: Icon(
-            Icons.refresh,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          padding: EdgeInsets.all(0),
-          onPressed: _refresh,
+      return Padding(
+        padding: const EdgeInsets.only(left: 12, top: 8),
+        child: _GlassActionButton(
+          icon: Icons.refresh_rounded,
+          tooltip: "Refresh",
+          onTap: _refresh,
         ),
       );
     } else if (_visibilityUpdateTimer) {
-      // Show the circular timer indicator
-      return Align(
-        alignment: Alignment.topLeft,
-        child: Tooltip(
-          message: "Update timer",
-          child: UpdateTimer(
-            Duration(seconds: source.autoUpdateInterval),
-            () => _parsingService.setSource(widget.source),
-          ),
+      return Padding(
+        padding: const EdgeInsets.only(left: 12, top: 8),
+        child: UpdateTimer(
+          Duration(seconds: source.autoUpdateInterval),
+          () => _parsingService.setSource(widget.source),
         ),
       );
     } else {
-      // Show nothings
-      return Container(height: 40.0);
+      return const SizedBox(height: 48);
     }
   }
 
   Widget _buildPage(List<Widget> children) {
     return RefreshIndicator(
-      color: Theme.of(context).primaryColor,
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      color: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
       key: _refreshKey,
       onRefresh: _refresh,
       child: ListView(
-        physics: AlwaysScrollableScrollPhysics(
+        physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
         shrinkWrap: true,
-        children: [_buildUpdateIndicator(widget.source)]..addAll(children),
+        children: [_buildUpdateIndicator(widget.source), ...children],
       ),
     );
   }
 
   Widget _buildDetailButton() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: <Widget>[
-          Text(
-            "SEE ALL",
-            maxLines: 1,
-            style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Theme.of(context).colorScheme.secondary),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: Theme.of(context).colorScheme.secondary,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: GestureDetector(
+        onTap: _openDetailPage,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                    color: Colors.white.withOpacity(0.18), width: 1.0),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "SEE ALL",
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(Icons.keyboard_arrow_down_rounded,
+                      color: Colors.white.withOpacity(0.7), size: 20),
+                ],
+              ),
             ),
-            onPressed: _openDetailPage,
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Future<List<Widget>> _buildValuesTable(Map<String, String> values) async {
+  Future<List<Widget>> _buildValuesTable(
+      Map<String, String> values) async {
     List<ValueSetting> settings = await _retrieveValueSettings();
-
     List<Widget> toReturn = [];
 
-    // Build the values table according to the settings and visibility map
     for (int i = 0; i < settings.length; i += 2) {
-      ValueSetting leftSetting = settings[i];
-      ValueSetting? rightSetting = i + 1 < settings.length ? settings[i + 1] : null;
+      final left = settings[i];
+      final right = i + 1 < settings.length ? settings[i + 1] : null;
 
-      bool visibilityLeft = _visibilityMap[leftSetting.visibilityVarName]!;
-      bool? visibilityRight = rightSetting != null ? _visibilityMap[rightSetting.visibilityVarName] : false;
+      bool visLeft = _visibilityMap[left.visibilityVarName]!;
+      bool visRight = right != null
+          ? (_visibilityMap[right.visibilityVarName] ?? false)
+          : false;
 
-      if (visibilityLeft || visibilityRight!) {
+      if (visLeft || visRight) {
         toReturn.add(
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: DoubleVariableRow(
-              labelLeft: leftSetting.name,
-              assetLeft: leftSetting.asset,
-              valueLeft: values[leftSetting.valueVarName!] ?? leftSetting.valueDefaultValue,
-              unitLeft: values[leftSetting.unitVarName!] ?? leftSetting.unitDefaultValue,
-              labelRight: rightSetting?.name ?? "",
-              assetRight: rightSetting?.asset ?? "",
-              valueRight: values[rightSetting?.valueVarName!] ?? rightSetting!.valueDefaultValue,
-              unitRight: values[rightSetting?.unitVarName!] ?? rightSetting!.unitDefaultValue,
-              visibilityLeft: visibilityLeft,
-              visibilityRight: visibilityRight,
+              labelLeft: left.name,
+              assetLeft: left.asset,
+              valueLeft: values[left.valueVarName!] ?? left.valueDefaultValue,
+              unitLeft: values[left.unitVarName!] ?? left.unitDefaultValue,
+              labelRight: right?.name ?? "",
+              assetRight: right?.asset ?? "",
+              valueRight:
+                  values[right?.valueVarName!] ?? right?.valueDefaultValue,
+              unitRight: values[right?.unitVarName!] ?? right?.unitDefaultValue,
+              visibilityLeft: visLeft,
+              visibilityRight: visRight,
             ),
           ),
         );
-      } else if (toReturn.isNotEmpty) {
-        // If the entire row is invisible remove the last spacing
-        toReturn.removeLast();
-      }
-
-      if (i + 2 < settings.length) {
-        toReturn.add(SizedBox(height: 20.0));
+        toReturn.add(const SizedBox(height: 12));
       }
     }
 
@@ -389,38 +369,75 @@ class _PWSStatePageState extends State<PWSStatePage> {
   }
 
   List<Widget> _buildCustomDataValues(Map<String, String>? values) {
-    List<Widget> toReturn = _customData.isEmpty ? [] : [SizedBox(height: 20.0)];
+    if (_customData.isEmpty) return [];
+    List<Widget> toReturn = [const SizedBox(height: 12)];
 
-    // Build the values table according to the settings and visibility map
     for (int i = 0; i < _customData.length; i += 2) {
-      CustomData leftData = _customData[i];
-      CustomData? rightData = i + 1 < _customData.length ? _customData[i + 1] : null;
+      final left = _customData[i];
+      final right = i + 1 < _customData.length ? _customData[i + 1] : null;
 
       toReturn.add(
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: DoubleVariableRow(
-            labelLeft: leftData.name,
-            iconLeft: leftData.icon,
+            labelLeft: left.name,
+            iconLeft: left.icon,
             assetLeft: "assets/images/settings.svg",
-            valueLeft: values![leftData.name] ?? "-",
-            unitLeft: leftData.unit ?? "",
-            labelRight: rightData != null ? rightData.name : "",
-            iconRight: rightData?.icon ?? null,
+            valueLeft: values![left.name] ?? "-",
+            unitLeft: left.unit ?? "",
+            labelRight: right?.name ?? "",
+            iconRight: right?.icon,
             assetRight: "assets/images/settings.svg",
-            valueRight: values[rightData?.name] ?? "-",
-            unitRight: rightData?.unit ?? "",
+            valueRight: values[right?.name] ?? "-",
+            unitRight: right?.unit ?? "",
             visibilityLeft: true,
-            visibilityRight: rightData != null,
+            visibilityRight: right != null,
           ),
         ),
       );
-
-      if (i + 2 < _customData.length) {
-        toReturn.add(SizedBox(height: 20.0));
-      }
+      toReturn.add(const SizedBox(height: 12));
     }
 
     return toReturn;
+  }
+}
+
+/// Small glass action button used for the refresh icon.
+class _GlassActionButton extends StatelessWidget {
+  const _GlassActionButton({
+    required this.icon,
+    required this.onTap,
+    this.tooltip = '',
+  });
+
+  final IconData icon;
+  final VoidCallback onTap;
+  final String tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(20),
+                border:
+                    Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+              ),
+              child: Icon(icon, color: Colors.white, size: 20),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
