@@ -31,16 +31,16 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
 
     lintOptions {
         disable 'InvalidPackage'
     }
 
     defaultConfig {
-        applicationId "com.zem.pwswatcher"
+        applicationId "com.github.intranox.pws_watcher"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
