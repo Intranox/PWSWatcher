@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ConnectionStatusSingleton {
   //This creates the single instance by calling the `_internal` constructor specified below
