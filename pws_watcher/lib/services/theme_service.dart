@@ -8,15 +8,13 @@ ThemeData dayTheme = ThemeData(
   primarySwatch: Colors.lightBlue,
   primaryColor: Colors.lightBlue,
   primaryColorDark: Colors.lightBlue[800],
-  backgroundColor: Colors.lightBlue,
   scaffoldBackgroundColor: Colors.lightBlue[800],
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Colors.lightBlue,
     selectionColor: Colors.lightBlue,
   ),
-  toggleableActiveColor: Colors.lightBlue,
   buttonTheme:
-      ButtonThemeData(colorScheme: ColorScheme.dark(primary: Colors.lightBlue, background: Colors.transparent)),
+      ButtonThemeData(colorScheme: ColorScheme.dark(foregroundColor: Colors.lightBlue, background: Colors.transparent)),
   iconTheme: IconThemeData(color: Colors.lightBlue),
   colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.lightBlue).copyWith(
     secondary: Colors.white,
@@ -35,15 +33,13 @@ ThemeData eveningTheme = ThemeData(
   primarySwatch: Colors.deepOrange,
   primaryColor: Colors.deepOrange,
   primaryColorDark: Colors.deepOrange[800],
-  backgroundColor: Colors.deepOrange,
   scaffoldBackgroundColor: Colors.deepOrange[800],
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Colors.deepOrange,
     selectionColor: Colors.deepOrange,
   ),
-  toggleableActiveColor: Colors.deepOrange,
   buttonTheme:
-      ButtonThemeData(colorScheme: ColorScheme.dark(primary: Colors.deepOrange, background: Colors.transparent)),
+      ButtonThemeData(colorScheme: ColorScheme.dark(foregroundColor: Colors.deepOrange, background: Colors.transparent)),
   iconTheme: IconThemeData(color: Colors.deepOrange),
   colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepOrange).copyWith(secondary: Colors.white),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -60,15 +56,13 @@ ThemeData nightTheme = ThemeData(
   primarySwatch: Colors.deepPurple,
   primaryColor: Colors.deepPurple,
   primaryColorDark: Colors.deepPurple[800],
-  backgroundColor: Colors.deepPurple,
   scaffoldBackgroundColor: Colors.deepPurple[800],
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Colors.deepPurple,
     selectionColor: Colors.deepPurple,
   ),
-  toggleableActiveColor: Colors.deepPurple,
   buttonTheme:
-      ButtonThemeData(colorScheme: ColorScheme.dark(primary: Colors.deepPurple, background: Colors.transparent)),
+      ButtonThemeData(colorScheme: ColorScheme.dark(foregroundColor: Colors.deepPurple, background: Colors.transparent)),
   iconTheme: IconThemeData(color: Colors.deepPurple),
   colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple).copyWith(secondary: Colors.white),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -85,14 +79,12 @@ ThemeData greyTheme = ThemeData(
   primarySwatch: Colors.blueGrey,
   primaryColor: Colors.blueGrey,
   primaryColorDark: Colors.blueGrey[800],
-  backgroundColor: Colors.blueGrey,
   scaffoldBackgroundColor: Colors.blueGrey[800],
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Colors.blueGrey,
     selectionColor: Colors.blueGrey,
   ),
-  toggleableActiveColor: Colors.blueGrey,
-  buttonTheme: ButtonThemeData(colorScheme: ColorScheme.dark(primary: Colors.blueGrey, background: Colors.transparent)),
+  buttonTheme: ButtonThemeData(colorScheme: ColorScheme.dark(foregroundColor: Colors.blueGrey, background: Colors.transparent)),
   iconTheme: IconThemeData(color: Colors.blueGrey),
   colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blueGrey).copyWith(secondary: Colors.white),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -125,14 +117,12 @@ ThemeData blackedTheme = ThemeData(
   primarySwatch: _black,
   primaryColor: Colors.black,
   primaryColorDark: Colors.black,
-  backgroundColor: Colors.black,
   scaffoldBackgroundColor: Colors.black,
   textSelectionTheme: TextSelectionThemeData(
     cursorColor: Colors.black,
     selectionColor: Colors.black,
   ),
-  toggleableActiveColor: Colors.black,
-  buttonTheme: ButtonThemeData(colorScheme: ColorScheme.dark(primary: Colors.white, background: Colors.transparent)),
+  buttonTheme: ButtonThemeData(colorScheme: ColorScheme.dark(foregroundColor: Colors.white, background: Colors.transparent)),
   iconTheme: IconThemeData(color: Colors.black),
   colorScheme: ColorScheme.fromSwatch(
     primarySwatch: _black,
