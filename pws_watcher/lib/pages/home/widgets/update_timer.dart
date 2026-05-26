@@ -1,82 +1,83 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class UpdateTimer extends StatefulWidget {
-  UpdateTimer(this.duration, this.callBack);
+  UpdateTimer(this.duration, this.onComplete);
 
   final Duration duration;
-  final Function callBack;
+  final VoidCallback onComplete;
 
   @override
   _UpdateTimerState createState() => _UpdateTimerState();
 }
 
 class _UpdateTimerState extends State<UpdateTimer>
-    with TickerProviderStateMixin {
-  AnimationController? _controller;
-  Duration? _actualDuration;
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _actualDuration = widget.duration;
-    startTimer();
-  }
-
-  void startTimer() {
     _controller = AnimationController(
-      duration: widget.duration,
       vsync: this,
+      duration: widget.duration,
     );
-    _controller!.addListener(() {
-      if (_controller!.value > 0.99) {
-        widget.callBack();
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        widget.onComplete();
+        _controller.reset();
+        _controller.forward();
       }
     });
-    _controller!.repeat();
-    _actualDuration = widget.duration;
-  }
 
-  void restartTimer() {
-    if (_controller != null) {
-      _controller!.stop();
-      _controller!.dispose();
-    }
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
-    _controller!.addListener(() {
-      if (_controller!.value > 0.99) {
-        widget.callBack();
-      }
-    });
-    _controller!.repeat();
-    _actualDuration = widget.duration;
+    _controller.forward();
   }
 
   @override
   void dispose() {
-    if (_controller != null) _controller!.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_actualDuration != widget.duration) {
-      restartTimer();
-    }
-    return Container(
-      margin: EdgeInsets.all(16.0),
-      width: 16.0,
-      height: 16.0,
-      child: AnimatedBuilder(
-          animation: _controller!,
-          builder: (context, snapshot) {
-            return CircularProgressIndicator(
-              value: _controller!.value,
-              strokeWidth: 2.5,
-            );
-          }),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+          ),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      value: 1.0 - _controller.value,
+                      strokeWidth: 2,
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.white70),
+                      backgroundColor: Colors.white24,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }
