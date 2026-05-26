@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zem.pwswatcher">
+    package="com.github.intranox.pws_watcher">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -35,7 +35,7 @@
         <receiver android:name=".Widget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.zem.pwswatcher.UPDATE" />
+                <action android:name="com.github.intranox.pws_watcher.UPDATE" />
             </intent-filter>
 
             <meta-data
@@ -45,7 +45,7 @@
         <receiver android:name=".WidgetMedium">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.zem.pwswatcher.UPDATE" />
+                <action android:name="com.github.intranox.pws_watcher.UPDATE" />
             </intent-filter>
 
             <meta-data
@@ -55,7 +55,7 @@
         <receiver android:name=".WidgetSmall">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.zem.pwswatcher.UPDATE" />
+                <action android:name="com.github.intranox.pws_watcher.UPDATE" />
             </intent-filter>
 
             <meta-data
