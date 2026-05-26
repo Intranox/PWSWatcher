@@ -151,11 +151,10 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
   // FUNCTIONS
 
   _pickIcon() async {
-    IconData? icon = await FlutterIconPicker.showIconPicker(
+    IconData? icon = await showIconPicker(
       context,
-      iconPackModes: [IconPack.lineAwesomeIcons],
-      iconColor: Colors.black,
-      showTooltips: true,
+      iconPackMode: IconPack.material,
+      iconColor: Theme.of(context).primaryColor,
     );
 
     _icon = icon;
