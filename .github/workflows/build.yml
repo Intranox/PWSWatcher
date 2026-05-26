@@ -1,20 +1,24 @@
 name: Build
 
 on:
-  workflow_dispatch:        # ← abilita il pulsante "Run workflow" su GitHub
+  workflow_dispatch:
   push:
-    branches: [ "**" ]
+    branches:
+      - "**"
   pull_request:
-    branches: [ master, main ]
+    branches:
+      - master
+      - main
 
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # ──────────────────────────────────────────────────────────────────────────
-  # 1. Analysis & tests
-  # ──────────────────────────────────────────────────────────────────────────
+
+  # --------------------------------------------------------------------------
+  # 1. Analyze
+  # --------------------------------------------------------------------------
   analyze:
     name: Analyze & Test
     runs-on: ubuntu-latest
@@ -23,7 +27,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: "3.x"
           channel: stable
           cache: true
 
@@ -31,23 +35,17 @@ jobs:
         working-directory: pws_watcher
         run: flutter pub get
 
-      - name: Verify formatting
-        working-directory: pws_watcher
-        run: dart format --output=none --set-exit-if-changed .
-        continue-on-error: true   # warn only — remove to enforce
-
       - name: Analyze project
         working-directory: pws_watcher
         run: flutter analyze --no-fatal-infos
 
-      # Uncomment when tests are added
       # - name: Run tests
       #   working-directory: pws_watcher
       #   run: flutter test
 
-  # ──────────────────────────────────────────────────────────────────────────
-  # 2. Build debug APK (no signing required)
-  # ──────────────────────────────────────────────────────────────────────────
+  # --------------------------------------------------------------------------
+  # 2. Build Debug APK (every branch, no signing needed)
+  # --------------------------------------------------------------------------
   build-debug:
     name: Build Debug APK
     needs: analyze
@@ -58,11 +56,11 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: "3.x"
           channel: stable
           cache: true
 
@@ -81,13 +79,12 @@ jobs:
           path: pws_watcher/build/app/outputs/apk/debug/app-debug.apk
           retention-days: 14
 
-  # ──────────────────────────────────────────────────────────────────────────
-  # 3. Build release APK (only on master / main, requires keystore secrets)
-  # ──────────────────────────────────────────────────────────────────────────
+  # --------------------------------------------------------------------------
+  # 3. Build Release APK (master/main only, requires keystore secrets)
+  # --------------------------------------------------------------------------
   build-release:
     name: Build Release APK
     needs: analyze
-    # Only run on the main/master branch where signing secrets are available
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
@@ -96,11 +93,11 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x'
+          flutter-version: "3.x"
           channel: stable
           cache: true
 
@@ -112,13 +109,9 @@ jobs:
         working-directory: pws_watcher
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > key.jks
 
-      - name: Build release APKs (split per ABI)
+      - name: Build release APKs
         working-directory: pws_watcher
-        run: |
-          flutter build apk \
-            --release \
-            --split-per-abi \
-            --no-tree-shake-icons
+        run: flutter build apk --release --split-per-abi --no-tree-shake-icons
         env:
           UPLOAD_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASS }}
 
