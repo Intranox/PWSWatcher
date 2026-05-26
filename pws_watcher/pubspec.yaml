@@ -4,42 +4,58 @@ description: Mobile application for Personal Weather Station monitoring.
 version: 99.99.99+99
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.16.0 <3.0.0"
 
 dependencies:
-  auto_size_text: ^3.0.0
-  connectivity: ^3.0.6
-  flare_flutter: ^3.0.2
   flutter:
     sdk: flutter
-  flutter_iconpicker: ^3.1.2
-  flutter_svg: ^1.0.1
-  get_it: ^7.2.0
-  hive: ^2.0.5
-  hive_flutter: ^1.1.0
-  http: ^0.13.4
-  image_downloader: ^0.31.0
-  intl: ^0.17.0
-  launch_review: ^3.0.1
-  overlay_support: ^1.2.1
-  path_provider: ^2.0.8
-  permission_handler: ^8.3.0
-  photo_view: ^0.13.0
-  provider: ^6.0.2
-  rxdart: ^0.27.3
-  shared_preferences: ^2.0.12
-  showcaseview: ^1.1.4
-  url_launcher: ^6.0.18
-  xml: ^5.3.1
+
+  # UI
+  auto_size_text: 3.0.0
+  flutter_svg: 1.0.3
+  overlay_support: 1.2.1
+  photo_view: 0.13.0
+  showcaseview: 1.1.8
+
+  # Icons
+  flutter_iconpicker: 2.2.1
+
+  # Networking / data
+  http: 0.13.4
+  xml: 5.3.1
+  connectivity: 3.0.6
+  rxdart: 0.27.3
+
+  # Storage
+  hive: 2.0.5
+  hive_flutter: 1.1.0
+  shared_preferences: 2.0.12
+  path_provider: 2.0.8
+
+  # Permissions / device
+  permission_handler: 8.3.0
+  image_downloader: 0.31.0
+  url_launcher: 6.0.18
+  launch_review: 3.0.1
+
+  # Utils
+  intl: 0.17.0
+  provider: 6.0.2
+  get_it: 7.2.0
+
+  # Animations
+  flare_flutter: 3.0.2
 
 dev_dependencies:
-  build_runner: ^2.1.7
   flutter_test:
     sdk: flutter
-  hive_generator: ^1.1.2
+
+  build_runner: 2.1.7
+  hive_generator: 1.1.2
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/
     - assets/images/
