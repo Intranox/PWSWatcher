@@ -210,16 +210,14 @@ class _PWSDialogState extends State<PWSDialog> {
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Theme.of(context).labelLargeTheme.colorScheme?.background,
-                foregroundColor: Theme.of(context).labelLargeTheme.colorScheme?.primary,
+                foregroundColor: Theme.of(context).primaryColor,
               ),
               child: Text("Help"),
               onPressed: _openHelp,
             ),
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Theme.of(context).labelLargeTheme.colorScheme?.background,
-                foregroundColor: Theme.of(context).labelLargeTheme.colorScheme?.primary,
+                foregroundColor: Theme.of(context).primaryColor,
               ),
               child: Text("Close"),
               onPressed: () => Navigator.of(context).pop(),

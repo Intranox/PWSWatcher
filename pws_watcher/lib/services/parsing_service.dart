@@ -162,7 +162,7 @@ class ParsingService {
       document.findAllElements("misc").forEach((elem) {
         if (elem.attributes.where((attr) => attr.name.toString() == "data" && attr.value == "station_location").length >
             0) {
-          pwsInfo['station_location'] = elem.value;
+          pwsInfo['station_location'] = elem.value ?? '';
         }
       });
       document.findAllElements("data").forEach((elem) {
@@ -180,7 +180,7 @@ class ParsingService {
               .value;
         } catch (e) {}
         if (variable != null) {
-          pwsInfo[variable] = elem.value;
+          pwsInfo[variable] = elem.value ?? '';
         }
       });
       return pwsInfo;

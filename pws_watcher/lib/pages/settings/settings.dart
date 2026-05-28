@@ -236,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
       key: _fabKey,
       title: "Add PWS",
       description: "Tap here to add your PWS info",
-      toShape: ShapeBorderClipper(shape: CircleBorder()),
+      targetShapeBorder: CircleBorder(),
       child: FloatingActionButton.extended(
         onPressed: _addSource,
         elevation: 4,
