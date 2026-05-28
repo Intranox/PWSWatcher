@@ -1,48 +1,39 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.intranox.pws_watcher">
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <application
         android:usesCleartextTraffic="true"
         android:icon="@drawable/icon"
         android:label="PWS Watcher"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
         <activity
             android:name=".MainActivity"
-            android:exported="true"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">
-
+            <!-- Specify that the launch screen should continue being displayed -->
+            <!-- until Flutter renders its first frame. -->
             <meta-data
                 android:name="io.flutter.embedding.android.SplashScreenDrawable"
                 android:resource="@drawable/launch_background" />
-
+            <!-- Theme to apply as soon as Flutter begins rendering frames -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
-        <receiver
-            android:name=".Widget"
-            android:exported="true">
-
+        <receiver android:name=".Widget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.github.intranox.pws_watcher.UPDATE" />
@@ -52,11 +43,7 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
-
-        <receiver
-            android:name=".WidgetMedium"
-            android:exported="true">
-
+        <receiver android:name=".WidgetMedium">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.github.intranox.pws_watcher.UPDATE" />
@@ -66,11 +53,7 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_medium_info" />
         </receiver>
-
-        <receiver
-            android:name=".WidgetSmall"
-            android:exported="true">
-
+        <receiver android:name=".WidgetSmall">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.github.intranox.pws_watcher.UPDATE" />
@@ -80,37 +63,20 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_small_info" />
         </receiver>
-
-        <activity
-            android:name=".WidgetConfigurationActivity"
-            android:exported="true">
-
+        <activity android:name=".WidgetConfigurationActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
-
         </activity>
-
-        <activity
-            android:name=".WidgetMediumConfigurationActivity"
-            android:exported="true">
-
+        <activity android:name=".WidgetMediumConfigurationActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
-
         </activity>
-
-        <activity
-            android:name=".WidgetSmallConfigurationActivity"
-            android:exported="true">
-
+        <activity android:name=".WidgetSmallConfigurationActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
-
         </activity>
-
     </application>
-
 </manifest>
