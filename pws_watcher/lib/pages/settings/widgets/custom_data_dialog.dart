@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+
 import 'package:pws_watcher/model/custom_data.dart';
 
 enum CustomDataDialogMode { ADD, EDIT }
@@ -149,11 +150,7 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
   // FUNCTIONS
 
   _pickIcon() async {
-    IconData? icon = await showIconPicker(
-      context,
-      iconPackMode: IconPack.material,
-      iconColor: Theme.of(context).primaryColor,
-    );
+    IconData? icon = await FlutterIconPicker.showIconPicker(context);
 
     _icon = icon;
     setState(() {});
