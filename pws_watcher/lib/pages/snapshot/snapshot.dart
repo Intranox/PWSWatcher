@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:image_downloader/image_downloader.dart';
+import 'package:gal/gal.dart';
+import 'package:http/http.dart' as http;
 
 class SnapshotPage extends StatefulWidget {
   SnapshotPage(
@@ -118,12 +119,8 @@ class _SnapshotPageState extends State<SnapshotPage> {
       }
     }
     try {
-      var imageId = await ImageDownloader.downloadImage(widget.urlImage!,
-          destination:
-              AndroidDestinationType.custom(directory: 'Download', subDirectory: widget.downloadName! + ".png"));
-      if (imageId == null) {
-        return;
-      }
+      final response = await http.get(Uri.parse(widget.urlImage!));
+      await Gal.putImageBytes(response.bodyBytes, name: widget.downloadName! + ".png");
     } catch (error) {
       print(error);
     }
