@@ -209,6 +209,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
     return AppBar(
       systemOverlayStyle: SystemUiOverlayStyle.light,
       elevation: 0,
+      backgroundColor: Theme.of(context).primaryColor,
+      foregroundColor: Colors.white,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
         onPressed: () => _closeSettings(),
