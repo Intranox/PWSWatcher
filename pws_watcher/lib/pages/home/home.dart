@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:launch_review/launch_review.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:pws_watcher/pages/home/widgets/dots_indicator.dart';
 import 'package:pws_watcher/model/state.dart';
@@ -177,7 +177,12 @@ class _HomePageState extends State<HomePage> {
           trailing: Builder(builder: (context) {
             return TextButton(
               onPressed: () {
-                LaunchReview.launch();
+                final inAppReview = InAppReview.instance;
+                if (await inAppReview.isAvailable()) {
+                  await inAppReview.requestReview();
+                } else {
+                  await inAppReview.openStoreListing();
+                }
                 OverlaySupportEntry.of(context)!.dismiss();
               },
               child: const Text('REVIEW',
