@@ -19,7 +19,7 @@ dependencies:
 
   # Icons
   flutter_iconpicker: ^3.2.0
-  font_awesome_flutter: ^10.5.0
+  font_awesome_flutter: 10.7.0
 
   # Networking / data
   http: 0.13.6
