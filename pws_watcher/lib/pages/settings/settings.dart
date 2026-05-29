@@ -78,8 +78,13 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        if (!(await _onWillPop())) return;
+        if (context.mounted) Navigator.of(context).pop();
+      },
       child: ShowCaseWidget(
         builder: Builder(
           builder: (context) {
