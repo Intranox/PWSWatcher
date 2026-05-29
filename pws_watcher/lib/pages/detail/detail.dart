@@ -33,10 +33,8 @@ class _DetailPageState extends State<DetailPage> {
     if (Theme.of(context).brightness == Brightness.light) {
       data = data.copyWith(scaffoldBackgroundColor: Colors.white);
     }
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
+    return PopScope(
+      canPop: true,
       child: Theme(
         data: data,
         child: Scaffold(
