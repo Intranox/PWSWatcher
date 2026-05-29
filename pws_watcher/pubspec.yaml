@@ -35,8 +35,9 @@ dependencies:
 
   # Permissions / device
   permission_handler: 10.4.3
+  gal: ^2.3.0
   url_launcher: 6.1.14
-  launch_review: 3.0.1
+  in_app_review: 2.0.9
 
   # Utils
   intl: 0.18.1
