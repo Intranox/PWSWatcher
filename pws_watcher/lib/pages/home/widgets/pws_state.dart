@@ -250,24 +250,18 @@ class _PWSStatePageState extends State<PWSStatePage> {
 
   Widget _buildUpdateIndicator(PWS source) {
     if (source.autoUpdateInterval == 0) {
-      return Padding(
-        padding: const EdgeInsets.only(left: 12, top: 8),
-        child: _GlassActionButton(
-          icon: Icons.refresh_rounded,
-          tooltip: "Refresh",
-          onTap: _refresh,
-        ),
+      return _GlassActionButton(
+        icon: Icons.refresh_rounded,
+        tooltip: "Refresh",
+        onTap: _refresh,
       );
     } else if (_visibilityUpdateTimer) {
-      return Padding(
-        padding: const EdgeInsets.only(left: 12, top: 8),
-        child: UpdateTimer(
-          Duration(seconds: source.autoUpdateInterval),
-          () => _parsingService.setSource(widget.source),
-        ),
+      return UpdateTimer(
+        Duration(seconds: source.autoUpdateInterval),
+        () => _parsingService.setSource(widget.source),
       );
     } else {
-      return const SizedBox(height: 48);
+      return const SizedBox.shrink();
     }
   }
 
@@ -277,12 +271,21 @@ class _PWSStatePageState extends State<PWSStatePage> {
       backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
       key: _refreshKey,
       onRefresh: _refresh,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(
-          parent: BouncingScrollPhysics(),
-        ),
-        shrinkWrap: true,
-        children: [_buildUpdateIndicator(widget.source), ...children],
+      child: Stack(
+        children: [
+          ListView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            shrinkWrap: true,
+            children: children,
+          ),
+          Positioned(
+            top: 8,
+            right: 56, // leave space for the settings button
+            child: _buildUpdateIndicator(widget.source),
+          ),
+        ],
       ),
     );
   }
@@ -302,7 +305,7 @@ class _PWSStatePageState extends State<PWSStatePage> {
                 color: Colors.white.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                    color: Colors.white.withOpacity(0.18), width: 1.0),
+                    color: Colors.white.withOpacity(0.35), width: 1.0),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -310,15 +313,15 @@ class _PWSStatePageState extends State<PWSStatePage> {
                   Text(
                     "SEE ALL",
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white,
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 2.0,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Icon(Icons.keyboard_arrow_down_rounded,
-                      color: Colors.white.withOpacity(0.7), size: 20),
+                      color: Colors.white, size: 20),
                 ],
               ),
             ),
