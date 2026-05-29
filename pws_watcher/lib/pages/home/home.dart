@@ -176,7 +176,7 @@ class _HomePageState extends State<HomePage> {
           foreground: Colors.white,
           trailing: Builder(builder: (context) {
             return TextButton(
-              onPressed: () {
+              onPressed: () async {
                 final inAppReview = InAppReview.instance;
                 if (await inAppReview.isAvailable()) {
                   await inAppReview.requestReview();
