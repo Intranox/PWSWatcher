@@ -211,12 +211,7 @@ class _PWSStatePageState extends State<PWSStatePage> {
       for (String dataJSON in customDataJSON) {
         dynamic data = jsonDecode(dataJSON);
         IconData? icon = data["icon"] != null
-            ? IconData(
-                data["icon"]["codePoint"],
-                fontFamily: data["icon"]["fontFamily"],
-                fontPackage: data["icon"]["fontPackage"],
-                matchTextDirection: data["icon"]["matchTextDirection"],
-              )
+            ? _iconDataFromJson(data["icon"])
             : null;
         _customData.add(CustomData(
             name: data["name"], unit: data["unit"], icon: icon));
