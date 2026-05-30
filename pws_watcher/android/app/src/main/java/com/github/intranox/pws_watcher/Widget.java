@@ -69,7 +69,7 @@ public class Widget extends AppWidgetProvider {
             SharedPreferences sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
             Intent updateIntent = new Intent(context, Widget.class);
             updateIntent.setAction(UPDATE_FILTER);
-            PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent, 0);
+            PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent, PendingIntent.FLAG_IMMUTABLE);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             long refreshRate = sharedPrefs.getLong("flutter.widget_refresh_interval", 15);
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(), refreshRate * 60000, pendingUpdateIntent);
@@ -124,7 +124,7 @@ public class Widget extends AppWidgetProvider {
         } else if (intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_DISABLED)) {
             Intent updateIntent = new Intent(context, Widget.class);
             updateIntent.setAction(UPDATE_FILTER);
-            PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent, 0);
+            PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent, PendingIntent.FLAG_IMMUTABLE);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.cancel(pendingUpdateIntent);
             SharedPreferences sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
@@ -550,18 +550,18 @@ public class Widget extends AppWidgetProvider {
             configurationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             configurationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             configurationIntent.setData(Uri.parse(configurationIntent.toUri(Intent.URI_INTENT_SCHEME)));
-            PendingIntent configurationPendingIntent = PendingIntent.getActivity(context, 0, configurationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent configurationPendingIntent = PendingIntent.getActivity(context, 0, configurationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             view.setOnClickPendingIntent(R.id.ib_setting, configurationPendingIntent);
             view.setOnClickPendingIntent(R.id.ib_refresh, getPendingSelfIntent(context, onRefreshClick));
             Intent openAppIntent = new Intent(context, MainActivity.class);
-            PendingIntent openAppPendingIntent = PendingIntent.getActivity(context, 0, openAppIntent, 0);
+            PendingIntent openAppPendingIntent = PendingIntent.getActivity(context, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE);
             view.setOnClickPendingIntent(R.id.rl_widget_container, openAppPendingIntent);
         }
 
         protected PendingIntent getPendingSelfIntent(Context context, String action) {
             Intent intent = new Intent(context, Widget.class);
             intent.setAction(action);
-            return PendingIntent.getBroadcast(context, 0, intent, 0);
+            return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         }
 
         private double convertWindSpeed(double value, String unit, String preferred) {
