@@ -103,7 +103,19 @@ public class WidgetConfigurationActivity extends Activity {
         if (stringValue != null) {
             List<String> sourcesJSON = null;
 
-            if (stringValue.startsWith(LIST_IDENTIFIER)) {
+            // Flutter shared_preferences 2.x stores lists as JSON array: ["item1","item2"]
+            // Older versions used a Java-serialized format with LIST_IDENTIFIER prefix.
+            // Try JSON first, fall back to legacy deserialization.
+            if (stringValue.startsWith("[")) {
+                try {
+                    org.json.JSONArray jsonArray = new org.json.JSONArray(stringValue);
+                    sourcesJSON = new ArrayList<>();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        sourcesJSON.add(jsonArray.getString(i));
+                    }
+                } catch (JSONException ignored) {
+                }
+            } else if (stringValue.startsWith(LIST_IDENTIFIER)) {
                 try {
                     sourcesJSON = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
                 } catch (IOException ignored) {
