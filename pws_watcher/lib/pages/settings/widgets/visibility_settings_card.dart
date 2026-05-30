@@ -10,6 +10,17 @@ import 'package:pws_watcher/pages/settings/widgets/delete_custom_data_dialog.dar
 import 'package:pws_watcher/services/theme_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Builds [IconData] from a JSON map at runtime.
+@pragma('vm:never-inline')
+IconData _iconDataFromJson(dynamic json) {
+  return IconData(
+    json["codePoint"] as int,
+    fontFamily: json["fontFamily"] as String?,
+    fontPackage: json["fontPackage"] as String?,
+    matchTextDirection: json["matchTextDirection"] as bool? ?? false,
+  );
+}
+
 class VisibilitySettingsCard extends StatefulWidget {
   final ThemeService? themeService = getIt<ThemeService>();
 
