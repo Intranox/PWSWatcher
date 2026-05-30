@@ -36,6 +36,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        disable 'UnspecifiedImmutableFlag'
     }
 
     defaultConfig {
@@ -60,6 +61,7 @@ android {
         release {
             //signingConfig signingConfigs.debug
             signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
