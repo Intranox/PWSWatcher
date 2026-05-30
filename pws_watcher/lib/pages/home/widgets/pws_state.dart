@@ -18,6 +18,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'pws_temperature_row.dart';
 import 'snapshot_preview.dart';
 
+/// Builds [IconData] from a JSON map at runtime.
+@pragma('vm:never-inline')
+IconData _iconDataFromJson(dynamic json) {
+  return IconData(
+    json["codePoint"] as int,
+    fontFamily: json["fontFamily"] as String?,
+    fontPackage: json["fontPackage"] as String?,
+    matchTextDirection: json["matchTextDirection"] as bool? ?? false,
+  );
+}
+
 class PWSStatePage extends StatefulWidget {
   const PWSStatePage(this.source, {Key? key}) : super(key: key);
 
