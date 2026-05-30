@@ -11,7 +11,6 @@ import 'package:pws_watcher/model/pws.dart';
 import 'dart:convert';
 import 'package:pws_watcher/services/connection_status.dart';
 import 'dart:async';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class HomePage extends StatefulWidget {
@@ -223,16 +222,7 @@ class _HomePageState extends State<HomePage> {
                     .copyWith(color: Colors.white, letterSpacing: 0.5),
               ),
             ),
-            Container(
-              height: (MediaQuery.of(context).size.height) - 200,
-              width: MediaQuery.of(context).size.width,
-              child: const FlareActor(
-                "assets/flare/offline.flr",
-                alignment: Alignment.center,
-                fit: BoxFit.contain,
-                animation: "go",
-              ),
-            ),
+            const _OfflineAnimation(),
           ],
         ),
       );
@@ -331,6 +321,67 @@ class _HomePageState extends State<HomePage> {
                 curve: _kCurve,
               );
             },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OfflineAnimation extends StatefulWidget {
+  const _OfflineAnimation();
+  @override
+  State<_OfflineAnimation> createState() => _OfflineAnimationState();
+}
+
+class _OfflineAnimationState extends State<_OfflineAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _float;
+  late Animation<double> _fade;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 2))
+      ..repeat(reverse: true);
+    _float = Tween<double>(begin: -12, end: 12).animate(
+        CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+    _fade = Tween<double>(begin: 0.4, end: 0.9).animate(
+        CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 200,
+      child: Center(
+        child: AnimatedBuilder(
+          animation: _ctrl,
+          builder: (context, child) => Transform.translate(
+            offset: Offset(0, _float.value),
+            child: Opacity(opacity: _fade.value, child: child),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 120, height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.08),
+                  border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+                ),
+                child: const Icon(Icons.wifi_off_rounded, color: Colors.white70, size: 56),
+              ),
+              const SizedBox(height: 24),
+              Text('No connection',
+                style: TextStyle(color: Colors.white.withOpacity(0.6),
+                    fontSize: 16, letterSpacing: 1.5, fontWeight: FontWeight.w300)),
+            ],
           ),
         ),
       ),
