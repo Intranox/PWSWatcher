@@ -80,7 +80,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         if (!(await _onWillPop())) return;
         if (context.mounted) Navigator.of(context).pop();
