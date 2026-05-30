@@ -43,6 +43,13 @@ dependencies:
   get_it: 7.6.4
 
 
+
+dependency_overrides:
+  # flutter_iconpicker pulls font_awesome_flutter as transitive dep.
+  # 10.9.0 uses Color.withValues() which requires Flutter 3.27+.
+  # Force 10.7.0 which is compatible with Flutter 3.24.x.
+  font_awesome_flutter: 10.7.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
