@@ -14,3 +14,6 @@
 
 # colorpicker optional dep
 -dontwarn top.defaults.checkerboarddrawable.**
+
+# Google Play Core (referenced by Flutter internals but not used in this app)
+-dontwarn com.google.android.play.core.**
