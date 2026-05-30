@@ -50,17 +50,21 @@ android {
 
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias'] != null ? keystoreProperties['keyAlias'] : "key"
-            keyPassword keystoreProperties['keyPassword'] != null ? keystoreProperties['keyPassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
-            storeFile file("../../key.jks")
-            storePassword keystoreProperties['storePassword'] != null ? keystoreProperties['storePassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
+            def keyFile = file("../../key.jks")
+            if (keyFile.exists()) {
+                keyAlias keystoreProperties['keyAlias'] != null ? keystoreProperties['keyAlias'] : "key"
+                keyPassword keystoreProperties['keyPassword'] != null ? keystoreProperties['keyPassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
+                storeFile keyFile
+                storePassword keystoreProperties['storePassword'] != null ? keystoreProperties['storePassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
+            }
         }
     }
 
     buildTypes {
         release {
-            //signingConfig signingConfigs.debug
-            signingConfig signingConfigs.release
+            // Use release signing if key.jks exists, otherwise fall back to debug
+            def keyFile = file("../../key.jks")
+            signingConfig keyFile.exists() ? signingConfigs.release : signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
