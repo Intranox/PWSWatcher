@@ -105,16 +105,7 @@ public class WidgetMediumConfigurationActivity extends Activity {
         if (stringValue != null) {
             List<String> sourcesJSON = null;
 
-            if (stringValue.startsWith("[")) {
-                try {
-                    org.json.JSONArray jsonArray = new org.json.JSONArray(stringValue);
-                    sourcesJSON = new ArrayList<>();
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        sourcesJSON.add(jsonArray.getString(i));
-                    }
-                } catch (JSONException ignored) {
-                }
-            } else if (stringValue.startsWith(LIST_IDENTIFIER)) {
+            if (stringValue.startsWith(LIST_IDENTIFIER)) {
                 try {
                     sourcesJSON = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
                 } catch (IOException ignored) {
@@ -132,6 +123,8 @@ public class WidgetMediumConfigurationActivity extends Activity {
                 } catch (JSONException e) {
                 }
             }
+        } else {
+            android.util.Log.w("PWSWidget", "flutter.sources is NULL");
         }
 
         this.rAdapter = new SourcesListAdapter(getApplicationContext(), sources);
