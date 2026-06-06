@@ -137,6 +137,8 @@ public class WidgetConfigurationActivity extends Activity {
                 }
             }
         }
+        this.rAdapter = new SourcesListAdapter(this, sources);
+        this.lvSources.setAdapter(this.rAdapter);
         this.lvSources.setEmptyView(findViewById(R.id.tv_empty_list));
 
         this.lvSources.setOnItemClickListener((adapter, v, position, id) -> {
