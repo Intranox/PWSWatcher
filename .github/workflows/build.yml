@@ -2,6 +2,9 @@ name: Build
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - "**"
   pull_request:
     branches:
       - master
@@ -30,8 +33,10 @@ jobs:
         working-directory: pws_watcher
         run: flutter analyze --no-fatal-infos
 
-  # Release APK firmato con il debug keystore - nessun segreto necessario.
-  # Produce APK piccoli (~20-30 MB) installabili sul telefono per test.
+  # -----------------------------------------------------------------------
+  # Test APK - firmato con IL TUO keystore (stessa chiave del release).
+  # Installabile e aggiornabile senza disinstallare.
+  # -----------------------------------------------------------------------
   build-test-apk:
     name: Build Test APK
     needs: analyze
@@ -50,13 +55,20 @@ jobs:
       - name: Install dependencies
         working-directory: pws_watcher
         run: flutter pub get
-      - name: Build release APKs (split per ABI, debug-signed)
+      - name: Decode keystore
+        working-directory: pws_watcher
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > key.jks
+      - name: Build test APKs (release, split per ABI)
         working-directory: pws_watcher
         run: |
           flutter build apk \
             --release \
             --split-per-abi \
             --no-tree-shake-icons
+        env:
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASS }}
       - name: Upload test APKs
         uses: actions/upload-artifact@v4
         with:
@@ -64,9 +76,11 @@ jobs:
           path: pws_watcher/build/app/outputs/apk/release/*.apk
           retention-days: 14
 
-  # APK di produzione con il tuo keystore. Solo su master/main.
+  # -----------------------------------------------------------------------
+  # Release APK - solo su master/main, con obfuscation completa.
+  # -----------------------------------------------------------------------
   build-release:
-    name: Build Release APK (production)
+    name: Build Release APK
     needs: analyze
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -97,7 +111,9 @@ jobs:
             --obfuscate \
             --split-debug-info=build/debug-info
         env:
-          UPLOAD_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASS }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASS }}
       - name: Build App Bundle
         working-directory: pws_watcher
         run: |
@@ -107,7 +123,9 @@ jobs:
             --obfuscate \
             --split-debug-info=build/debug-info
         env:
-          UPLOAD_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASS }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASS }}
       - name: Upload release APKs
         uses: actions/upload-artifact@v4
         with:
