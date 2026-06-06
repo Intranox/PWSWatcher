@@ -207,7 +207,7 @@ public class WidgetConfigurationActivity extends Activity {
                         .showIndicator(true)
                         .showValue(true)
                         .build()
-                        .show(v, new ColorPickerPopup.ColorPickerObserver() {
+                        .show(btnBgColor, new ColorPickerPopup.ColorPickerObserver() {
                             @Override
                             public void onColorPicked(int color) {
                                 btnBgColor.setBackgroundColor(color);
@@ -230,7 +230,7 @@ public class WidgetConfigurationActivity extends Activity {
                         .showIndicator(true)
                         .showValue(true)
                         .build()
-                        .show(v, new ColorPickerPopup.ColorPickerObserver() {
+                        .show(btnTextColor, new ColorPickerPopup.ColorPickerObserver() {
                             @Override
                             public void onColorPicked(int color) {
                                 btnBgColor.setTextColor(color);
