@@ -98,11 +98,53 @@ public class WidgetConfigurationActivity extends Activity {
             } catch(Exception e) {}
         }
 
-        // --- DEBUG: dump all SharedPreferences keys ---
-        android.util.Log.d("PWSWidget", "--- Reading SharedPreferences ---");
-        java.util.Map<String, ?> allPrefs = sharedPref.getAll();
-        if (allPrefs.isEmpty()) {
-            android.util.Log.w("PWSWidget", "SharedPreferences is EMPTY");
+        String stringValue = sharedPref.getString("flutter.sources", null);
+        List<Source> sources = new ArrayList<>();
+        if (stringValue != null) {
+            List<String> sourcesJSON = null;
+
+            if (stringValue.startsWith(LIST_IDENTIFIER)) {
+                String remainder = stringValue.substring(LIST_IDENTIFIER.length());
+                if (remainder.startsWith("[")) {
+                    // New format: LIST_IDENTIFIER + JSON array
+                    try {
+                        org.json.JSONArray arr = new org.json.JSONArray(remainder);
+                        sourcesJSON = new ArrayList<>();
+                        for (int i = 0; i < arr.length(); i++) {
+                            sourcesJSON.add(arr.getString(i));
+                        }
+                    } catch (JSONException ignored) {
+                    }
+                } else {
+                    // Old format: LIST_IDENTIFIER + ObjectOutputStream
+                    try {
+                        sourcesJSON = decodeList(remainder);
+                    } catch (IOException ignored) {
+                    }
+                }
+            } else if (stringValue.startsWith("[")) {
+                // Plain JSON array (no prefix)
+                try {
+                    org.json.JSONArray arr = new org.json.JSONArray(stringValue);
+                    sourcesJSON = new ArrayList<>();
+                    for (int i = 0; i < arr.length(); i++) {
+                        sourcesJSON.add(arr.getString(i));
+                    }
+                } catch (JSONException ignored) {
+                }
+            }
+
+            if (sourcesJSON == null) {
+                sourcesJSON = new ArrayList<>();
+            }
+
+            for (String sourceJSON : sourcesJSON) {
+                try {
+                    JSONObject obj = new JSONObject(sourceJSON);
+                    sources.add(new Source(obj.getInt("id"), obj.getString("name"), obj.getString("url"), obj.optString("parsingDateFormat")));
+                } catch (JSONException e) {
+                }
+            }
         }
         for (String k : allPrefs.keySet()) {
             Object v = allPrefs.get(k);
@@ -164,22 +206,6 @@ public class WidgetConfigurationActivity extends Activity {
         this.rAdapter = new SourcesListAdapter(getApplicationContext(), sources);
         this.lvSources.setAdapter(this.rAdapter);
         this.lvSources.setEmptyView(findViewById(R.id.tv_empty_list));
-        // --- DEBUG: imposta il testo della empty view con le info di debug ---
-        android.widget.TextView tvEmpty = (android.widget.TextView) findViewById(R.id.tv_empty_list);
-        if (tvEmpty != null) {
-            StringBuilder debugInfo = new StringBuilder();
-            debugInfo.append("DEBUG INFO:\n");
-            debugInfo.append("flutter.sources = ").append(stringValue == null ? "NULL" : "FOUND").append("\n");
-            if (stringValue != null) {
-                debugInfo.append("Formato: ").append(stringValue.substring(0, Math.min(60, stringValue.length()))).append("\n");
-            }
-            debugInfo.append("Tutte le chiavi:\n");
-            for (String k : allPrefs.keySet()) {
-                debugInfo.append("  ").append(k).append("\n");
-            }
-            tvEmpty.setText(debugInfo.toString());
-        }
-        // --- FINE DEBUG ---
 
         this.lvSources.setOnItemClickListener((adapter, v, position, id) -> {
             this.selectedSource = rAdapter.getItem(position);
