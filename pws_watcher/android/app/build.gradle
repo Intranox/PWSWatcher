@@ -52,10 +52,10 @@ android {
         release {
             def keyFile = file("../../key.jks")
             if (keyFile.exists()) {
-                keyAlias keystoreProperties['keyAlias'] != null ? keystoreProperties['keyAlias'] : "key"
-                keyPassword keystoreProperties['keyPassword'] != null ? keystoreProperties['keyPassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
-                storeFile keyFile
-                storePassword keystoreProperties['storePassword'] != null ? keystoreProperties['storePassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
+                keyAlias        keystoreProperties['keyAlias']    ?: System.getenv("KEYSTORE_ALIAS")    ?: "key"
+                keyPassword     keystoreProperties['keyPassword'] ?: System.getenv("KEYSTORE_KEY_PASS") ?: System.getenv("KEYSTORE_PASS")
+                storeFile       keyFile
+                storePassword   keystoreProperties['storePassword'] ?: System.getenv("KEYSTORE_PASS")
             }
         }
     }
