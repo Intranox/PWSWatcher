@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.CheckBox;
 import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.TextView;
@@ -45,6 +46,10 @@ public class WidgetSmallConfigurationActivity extends Activity {
     private ListView lvSources;
     private SeekBar sbFontSize;
     private TextView tvFontSize;
+    private CheckBox cbHumidity;
+    private CheckBox cbPressure;
+    private CheckBox cbRain;
+    private CheckBox cbWindSpeed;
     private Button btnBgColor;
     private Button btnTextColor;
     private Button btnConfirm;
@@ -77,7 +82,7 @@ public class WidgetSmallConfigurationActivity extends Activity {
             finish();
             return;
         }
-
+        
         final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         String widgetSettingsRaw = sharedPref.getString("widget_" + mAppWidgetId, null);
 
@@ -98,34 +103,25 @@ public class WidgetSmallConfigurationActivity extends Activity {
         if (stringValue != null) {
             List<String> sourcesJSON = null;
 
-            if (stringValue.startsWith(LIST_IDENTIFIER)) {
-                String remainder = stringValue.substring(LIST_IDENTIFIER.length());
-                if (remainder.startsWith("[")) {
-                    // New format: LIST_IDENTIFIER + JSON array
-                    try {
-                        org.json.JSONArray arr = new org.json.JSONArray(remainder);
-                        sourcesJSON = new ArrayList<>();
-                        for (int i = 0; i < arr.length(); i++) {
-                            sourcesJSON.add(arr.getString(i));
-                        }
-                    } catch (JSONException ignored) {
-                    }
-                } else {
-                    // Old format: LIST_IDENTIFIER + ObjectOutputStream
-                    try {
-                        sourcesJSON = decodeList(remainder);
-                    } catch (IOException ignored) {
-                    }
-                }
-            } else if (stringValue.startsWith("[")) {
-                // Plain JSON array (no prefix)
+            // Find the JSON array wherever it starts in the string.
+            // Format can be: "[...]", "LIST_IDENTIFIER[...]", "LIST_IDENTIFIER![...]"
+            int jsonStart = stringValue.indexOf("[");
+            if (jsonStart >= 0) {
                 try {
-                    org.json.JSONArray arr = new org.json.JSONArray(stringValue);
+                    org.json.JSONArray arr = new org.json.JSONArray(stringValue.substring(jsonStart));
                     sourcesJSON = new ArrayList<>();
                     for (int i = 0; i < arr.length(); i++) {
                         sourcesJSON.add(arr.getString(i));
                     }
                 } catch (JSONException ignored) {
+                }
+            }
+
+            // Legacy fallback: ObjectOutputStream serialization (no "[" in value)
+            if (sourcesJSON == null && stringValue.startsWith(LIST_IDENTIFIER)) {
+                try {
+                    sourcesJSON = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
+                } catch (IOException ignored) {
                 }
             }
 
@@ -141,64 +137,7 @@ public class WidgetSmallConfigurationActivity extends Activity {
                 }
             }
         }
-        for (String k : allPrefs.keySet()) {
-            Object v = allPrefs.get(k);
-            String vs = String.valueOf(v);
-            android.util.Log.d("PWSWidget", "  KEY=" + k + "  VAL=" + vs.substring(0, Math.min(120, vs.length())));
-        }
-
-        String stringValue = sharedPref.getString("flutter.sources", null);
-        android.util.Log.d("PWSWidget", "flutter.sources = " + (stringValue == null ? "NULL" : stringValue.substring(0, Math.min(200, stringValue.length()))));
-        // --- DIAGNOSTIC TOAST: mostra cosa c'e' in SharedPreferences ---
-        String toastMsg;
-        if (stringValue == null) {
-            toastMsg = "flutter.sources = NULL\nChiavi presenti: " + allPrefs.keySet().toString();
-        } else {
-            toastMsg = "flutter.sources found!\nFormato: " + stringValue.substring(0, Math.min(80, stringValue.length()));
-        }
-        android.widget.Toast.makeText(getApplicationContext(), toastMsg, android.widget.Toast.LENGTH_LONG).show();
-        // --- FINE DIAGNOSTIC ---
-
-        List<Source> sources = new ArrayList<>();
-        if (stringValue != null) {
-            List<String> sourcesJSON = null;
-
-            if (stringValue.startsWith(LIST_IDENTIFIER)) {
-                try {
-                    sourcesJSON = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
-                    android.util.Log.d("PWSWidget", "Decoded legacy list, size=" + sourcesJSON.size());
-                } catch (IOException e) {
-                    android.util.Log.e("PWSWidget", "decodeList failed: " + e.getMessage());
-                }
-            } else if (stringValue.startsWith("[")) {
-                try {
-                    org.json.JSONArray arr = new org.json.JSONArray(stringValue);
-                    sourcesJSON = new ArrayList<>();
-                    for (int i = 0; i < arr.length(); i++) sourcesJSON.add(arr.getString(i));
-                    android.util.Log.d("PWSWidget", "Decoded JSON array, size=" + sourcesJSON.size());
-                } catch (org.json.JSONException e) {
-                    android.util.Log.e("PWSWidget", "JSON decode failed: " + e.getMessage());
-                }
-            } else {
-                android.util.Log.e("PWSWidget", "Unknown format, first 50 chars: " + stringValue.substring(0, Math.min(50, stringValue.length())));
-            }
-
-            if (sourcesJSON == null) sourcesJSON = new ArrayList<>();
-
-            for (String sourceJSON : sourcesJSON) {
-                try {
-                    JSONObject obj = new JSONObject(sourceJSON);
-                    sources.add(new Source(obj.getInt("id"), obj.getString("name"), obj.getString("url"), obj.optString("parsingDateFormat")));
-                } catch (JSONException e) {
-                    android.util.Log.e("PWSWidget", "Source parse error: " + e.getMessage());
-                }
-            }
-            android.util.Log.d("PWSWidget", "Total sources loaded: " + sources.size());
-        } else {
-            android.util.Log.w("PWSWidget", "flutter.sources is NULL - app never saved sources?");
-        }
-
-        this.rAdapter = new SourcesListAdapter(getApplicationContext(), sources);
+        this.rAdapter = new SourcesListAdapter(this, sources);
         this.lvSources.setAdapter(this.rAdapter);
         this.lvSources.setEmptyView(findViewById(R.id.tv_empty_list));
 
@@ -211,10 +150,19 @@ public class WidgetSmallConfigurationActivity extends Activity {
 
             this.sbFontSize = findViewById(R.id.sb_fontsize);
             this.tvFontSize = findViewById(R.id.tv_fontsize);
-
+            this.cbHumidity = findViewById(R.id.cb_humidity);
+            this.cbPressure = findViewById(R.id.cb_pressure);
+            this.cbRain = findViewById(R.id.cb_rain);
+            this.cbWindSpeed = findViewById(R.id.cb_windspeed);
+            
             if(widgetSettingsRaw != null) {
                 try{
                     JSONObject widgetSettings = new JSONObject(widgetSettingsRaw);
+
+                    this.cbHumidity.setChecked(widgetSettings.getBoolean("humidityVisible"));
+                    this.cbPressure.setChecked(widgetSettings.getBoolean("pressureVisible"));
+                    this.cbRain.setChecked(widgetSettings.getBoolean("rainVisible"));
+                    this.cbWindSpeed.setChecked(widgetSettings.getBoolean("windspeedVisible"));
 
                     double multiplierValue = widgetSettings.getDouble("fontSizeMultiplier");
                     double[] doubleMultipliers = {0.35, 0.75, 1, 1.25, 1.65};
@@ -246,7 +194,7 @@ public class WidgetSmallConfigurationActivity extends Activity {
                 }
             };
             this.sbFontSize.setOnSeekBarChangeListener(seekBarChangeListener);
-
+            
             this.btnBgColor = findViewById(R.id.btn_bg_color);
             this.btnBgColor.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -313,6 +261,10 @@ public class WidgetSmallConfigurationActivity extends Activity {
             JSONObject root = new JSONObject();
             root.put("source", this.selectedSource.toJSONObject());
             root.put("fontSizeMultiplier", this.multiplier[this.sbFontSize.getProgress()]);
+            root.put("humidityVisible", this.cbHumidity.isChecked());
+            root.put("pressureVisible", this.cbPressure.isChecked());
+            root.put("rainVisible", this.cbRain.isChecked());
+            root.put("windspeedVisible", this.cbWindSpeed.isChecked());
             root.put("bgColor", this.bgColor);
             root.put("textColor", this.textColor);
             sharedPrefs.edit().putString("widget_" + mAppWidgetId, root.toString()).apply();
