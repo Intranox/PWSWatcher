@@ -152,8 +152,6 @@ public class WidgetMediumConfigurationActivity extends Activity {
             android.util.Log.d("PWSWidget", "Total sources loaded: " + sources.size());
         } else {
             android.util.Log.w("PWSWidget", "flutter.sources is NULL - app never saved sources?");
-        } else {
-            android.util.Log.w("PWSWidget", "flutter.sources is NULL");
         }
 
         this.rAdapter = new SourcesListAdapter(getApplicationContext(), sources);
