@@ -198,7 +198,7 @@ public class WidgetConfigurationActivity extends Activity {
             this.btnBgColor = findViewById(R.id.btn_bg_color);
             this.btnBgColor.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    new ColorPickerPopup.Builder(getApplicationContext())
+                    new ColorPickerPopup.Builder(WidgetConfigurationActivity.this)
                         .initialColor(bgColor)
                         .enableBrightness(true)
                         .enableAlpha(true)
@@ -221,7 +221,7 @@ public class WidgetConfigurationActivity extends Activity {
             this.btnTextColor = findViewById(R.id.btn_text_color);
             this.btnTextColor.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    new ColorPickerPopup.Builder(getApplicationContext())
+                    new ColorPickerPopup.Builder(WidgetConfigurationActivity.this)
                         .initialColor(textColor)
                         .enableBrightness(true)
                         .enableAlpha(true)
