@@ -166,6 +166,23 @@ public class WidgetMediumConfigurationActivity extends Activity {
         this.rAdapter = new SourcesListAdapter(getApplicationContext(), sources);
         this.lvSources.setAdapter(this.rAdapter);
         this.lvSources.setEmptyView(findViewById(R.id.tv_empty_list));
+        // --- DEBUG: imposta il testo della empty view con le info di debug ---
+        android.widget.TextView tvEmpty = (android.widget.TextView) findViewById(R.id.tv_empty_list);
+        if (tvEmpty != null) {
+            StringBuilder debugInfo = new StringBuilder();
+            debugInfo.append("DEBUG INFO:\n");
+            debugInfo.append("flutter.sources = ").append(stringValue == null ? "NULL" : "FOUND").append("\n");
+            if (stringValue != null) {
+                debugInfo.append("Formato: ").append(stringValue.substring(0, Math.min(60, stringValue.length()))).append("\n");
+            }
+            debugInfo.append("Tutte le chiavi:\n");
+            for (String k : allPrefs.keySet()) {
+                debugInfo.append("  ").append(k).append("\n");
+            }
+            tvEmpty.setText(debugInfo.toString());
+        }
+        // --- FINE DEBUG ---
+
         this.lvSources.setOnItemClickListener((adapter, v, position, id) -> {
             this.selectedSource = rAdapter.getItem(position);
 
