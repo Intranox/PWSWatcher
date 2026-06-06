@@ -114,6 +114,15 @@ public class WidgetMediumConfigurationActivity extends Activity {
 
         String stringValue = sharedPref.getString("flutter.sources", null);
         android.util.Log.d("PWSWidget", "flutter.sources = " + (stringValue == null ? "NULL" : stringValue.substring(0, Math.min(200, stringValue.length()))));
+        // --- DIAGNOSTIC TOAST: mostra cosa c'e' in SharedPreferences ---
+        String toastMsg;
+        if (stringValue == null) {
+            toastMsg = "flutter.sources = NULL\nChiavi presenti: " + allPrefs.keySet().toString();
+        } else {
+            toastMsg = "flutter.sources found!\nFormato: " + stringValue.substring(0, Math.min(80, stringValue.length()));
+        }
+        android.widget.Toast.makeText(getApplicationContext(), toastMsg, android.widget.Toast.LENGTH_LONG).show();
+        // --- FINE DIAGNOSTIC ---
 
         List<Source> sources = new ArrayList<>();
         if (stringValue != null) {
