@@ -65,6 +65,7 @@ public class WidgetMediumConfigurationActivity extends Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        android.widget.Toast.makeText(this, "[DEBUG v3] onCreate eseguito", android.widget.Toast.LENGTH_LONG).show();
 
         setResult(RESULT_CANCELED);
         setContentView(R.layout.activity_widget_configuration);
