@@ -103,34 +103,25 @@ public class WidgetConfigurationActivity extends Activity {
         if (stringValue != null) {
             List<String> sourcesJSON = null;
 
-            if (stringValue.startsWith(LIST_IDENTIFIER)) {
-                String remainder = stringValue.substring(LIST_IDENTIFIER.length());
-                if (remainder.startsWith("[")) {
-                    // New format: LIST_IDENTIFIER + JSON array
-                    try {
-                        org.json.JSONArray arr = new org.json.JSONArray(remainder);
-                        sourcesJSON = new ArrayList<>();
-                        for (int i = 0; i < arr.length(); i++) {
-                            sourcesJSON.add(arr.getString(i));
-                        }
-                    } catch (JSONException ignored) {
-                    }
-                } else {
-                    // Old format: LIST_IDENTIFIER + ObjectOutputStream
-                    try {
-                        sourcesJSON = decodeList(remainder);
-                    } catch (IOException ignored) {
-                    }
-                }
-            } else if (stringValue.startsWith("[")) {
-                // Plain JSON array (no prefix)
+            // Find the JSON array wherever it starts in the string.
+            // Format can be: "[...]", "LIST_IDENTIFIER[...]", "LIST_IDENTIFIER![...]"
+            int jsonStart = stringValue.indexOf("[");
+            if (jsonStart >= 0) {
                 try {
-                    org.json.JSONArray arr = new org.json.JSONArray(stringValue);
+                    org.json.JSONArray arr = new org.json.JSONArray(stringValue.substring(jsonStart));
                     sourcesJSON = new ArrayList<>();
                     for (int i = 0; i < arr.length(); i++) {
                         sourcesJSON.add(arr.getString(i));
                     }
                 } catch (JSONException ignored) {
+                }
+            }
+
+            // Legacy fallback: ObjectOutputStream serialization (no "[" in value)
+            if (sourcesJSON == null && stringValue.startsWith(LIST_IDENTIFIER)) {
+                try {
+                    sourcesJSON = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
+                } catch (IOException ignored) {
                 }
             }
 
