@@ -98,7 +98,30 @@ public class WidgetConfigurationActivity extends Activity {
             } catch(Exception e) {}
         }
 
+        // --- DEBUG: dump all SharedPreferences keys ---
+        android.util.Log.d("PWSWidget", "--- Reading SharedPreferences ---");
+        java.util.Map<String, ?> allPrefs = sharedPref.getAll();
+        if (allPrefs.isEmpty()) {
+            android.util.Log.w("PWSWidget", "SharedPreferences is EMPTY");
+        }
+        for (String k : allPrefs.keySet()) {
+            Object v = allPrefs.get(k);
+            String vs = String.valueOf(v);
+            android.util.Log.d("PWSWidget", "  KEY=" + k + "  VAL=" + vs.substring(0, Math.min(120, vs.length())));
+        }
+
         String stringValue = sharedPref.getString("flutter.sources", null);
+        android.util.Log.d("PWSWidget", "flutter.sources = " + (stringValue == null ? "NULL" : stringValue.substring(0, Math.min(200, stringValue.length()))));
+        // --- DIAGNOSTIC TOAST: mostra cosa c'e' in SharedPreferences ---
+        String toastMsg;
+        if (stringValue == null) {
+            toastMsg = "flutter.sources = NULL\nChiavi presenti: " + allPrefs.keySet().toString();
+        } else {
+            toastMsg = "flutter.sources found!\nFormato: " + stringValue.substring(0, Math.min(80, stringValue.length()));
+        }
+        android.widget.Toast.makeText(getApplicationContext(), toastMsg, android.widget.Toast.LENGTH_LONG).show();
+        // --- FINE DIAGNOSTIC ---
+
         List<Source> sources = new ArrayList<>();
         if (stringValue != null) {
             List<String> sourcesJSON = null;
@@ -106,26 +129,58 @@ public class WidgetConfigurationActivity extends Activity {
             if (stringValue.startsWith(LIST_IDENTIFIER)) {
                 try {
                     sourcesJSON = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
-                } catch (IOException ignored) {
+                    android.util.Log.d("PWSWidget", "Decoded legacy list, size=" + sourcesJSON.size());
+                } catch (IOException e) {
+                    android.util.Log.e("PWSWidget", "decodeList failed: " + e.getMessage());
                 }
+            } else if (stringValue.startsWith("[")) {
+                try {
+                    org.json.JSONArray arr = new org.json.JSONArray(stringValue);
+                    sourcesJSON = new ArrayList<>();
+                    for (int i = 0; i < arr.length(); i++) sourcesJSON.add(arr.getString(i));
+                    android.util.Log.d("PWSWidget", "Decoded JSON array, size=" + sourcesJSON.size());
+                } catch (org.json.JSONException e) {
+                    android.util.Log.e("PWSWidget", "JSON decode failed: " + e.getMessage());
+                }
+            } else {
+                android.util.Log.e("PWSWidget", "Unknown format, first 50 chars: " + stringValue.substring(0, Math.min(50, stringValue.length())));
             }
 
-            if (sourcesJSON == null) {
-                sourcesJSON = new ArrayList<>();
-            }
+            if (sourcesJSON == null) sourcesJSON = new ArrayList<>();
 
             for (String sourceJSON : sourcesJSON) {
                 try {
                     JSONObject obj = new JSONObject(sourceJSON);
                     sources.add(new Source(obj.getInt("id"), obj.getString("name"), obj.getString("url"), obj.optString("parsingDateFormat")));
                 } catch (JSONException e) {
+                    android.util.Log.e("PWSWidget", "Source parse error: " + e.getMessage());
                 }
             }
+            android.util.Log.d("PWSWidget", "Total sources loaded: " + sources.size());
+        } else {
+            android.util.Log.w("PWSWidget", "flutter.sources is NULL - app never saved sources?");
         }
         
         this.rAdapter = new SourcesListAdapter(getApplicationContext(), sources);
         this.lvSources.setAdapter(this.rAdapter);
         this.lvSources.setEmptyView(findViewById(R.id.tv_empty_list));
+        // --- DEBUG: imposta il testo della empty view con le info di debug ---
+        android.widget.TextView tvEmpty = (android.widget.TextView) findViewById(R.id.tv_empty_list);
+        if (tvEmpty != null) {
+            StringBuilder debugInfo = new StringBuilder();
+            debugInfo.append("DEBUG INFO:\n");
+            debugInfo.append("flutter.sources = ").append(stringValue == null ? "NULL" : "FOUND").append("\n");
+            if (stringValue != null) {
+                debugInfo.append("Formato: ").append(stringValue.substring(0, Math.min(60, stringValue.length()))).append("\n");
+            }
+            debugInfo.append("Tutte le chiavi:\n");
+            for (String k : allPrefs.keySet()) {
+                debugInfo.append("  ").append(k).append("\n");
+            }
+            tvEmpty.setText(debugInfo.toString());
+        }
+        // --- FINE DEBUG ---
+
         this.lvSources.setOnItemClickListener((adapter, v, position, id) -> {
             this.selectedSource = rAdapter.getItem(position);
 
