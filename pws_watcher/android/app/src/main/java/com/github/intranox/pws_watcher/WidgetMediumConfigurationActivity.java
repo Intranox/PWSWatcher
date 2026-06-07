@@ -194,10 +194,10 @@ public class WidgetMediumConfigurationActivity extends Activity {
             this.sbFontSize.setOnSeekBarChangeListener(seekBarChangeListener);
             
             this.btnBgColor = findViewById(R.id.btn_bg_color);
-            this.btnBgColor.setOnClickListener(v -> showColorPicker(true));
+            this.btnBgColor.setOnClickListener(btn -> showColorPicker(true));
 
             this.btnTextColor = findViewById(R.id.btn_text_color);
-            this.btnTextColor.setOnClickListener(v -> showColorPicker(false));
+            this.btnTextColor.setOnClickListener(btn -> showColorPicker(false));
 
             this.btnConfirm = findViewById(R.id.btn_confirm);
             this.btnConfirm.setOnClickListener(new View.OnClickListener() {
