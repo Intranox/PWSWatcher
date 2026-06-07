@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import android.content.ComponentName;
 
-import top.defaults.colorpicker.ColorPickerPopup;
-import top.defaults.colorpicker.ColorPickerView;
 
 public class WidgetConfigurationActivity extends Activity {
     public static final String UPDATE_FILTER = "com.github.intranox.pws_watcher.UPDATE";
@@ -196,50 +194,10 @@ public class WidgetConfigurationActivity extends Activity {
             this.sbFontSize.setOnSeekBarChangeListener(seekBarChangeListener);
             
             this.btnBgColor = findViewById(R.id.btn_bg_color);
-            this.btnBgColor.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    new ColorPickerPopup.Builder(WidgetConfigurationActivity.this)
-                        .initialColor(bgColor)
-                        .enableBrightness(true)
-                        .enableAlpha(true)
-                        .okTitle("Confirm")
-                        .cancelTitle("Cancel")
-                        .showIndicator(true)
-                        .showValue(true)
-                        .build()
-                        .show(btnBgColor, new ColorPickerPopup.ColorPickerObserver() {
-                            @Override
-                            public void onColorPicked(int color) {
-                                btnBgColor.setBackgroundColor(color);
-                                btnTextColor.setBackgroundColor(color);
-                                bgColor = color;
-                            }
-                        });
-                }
-            });
+            this.btnBgColor.setOnClickListener(v -> showColorPicker(true));
 
             this.btnTextColor = findViewById(R.id.btn_text_color);
-            this.btnTextColor.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    new ColorPickerPopup.Builder(WidgetConfigurationActivity.this)
-                        .initialColor(textColor)
-                        .enableBrightness(true)
-                        .enableAlpha(true)
-                        .okTitle("Confirm")
-                        .cancelTitle("Cancel")
-                        .showIndicator(true)
-                        .showValue(true)
-                        .build()
-                        .show(btnTextColor, new ColorPickerPopup.ColorPickerObserver() {
-                            @Override
-                            public void onColorPicked(int color) {
-                                btnBgColor.setTextColor(color);
-                                btnTextColor.setTextColor(color);
-                                textColor = color;
-                            }
-                        });
-                }
-            });
+            this.btnTextColor.setOnClickListener(v -> showColorPicker(false));
 
             this.btnConfirm = findViewById(R.id.btn_confirm);
             this.btnConfirm.setOnClickListener(new View.OnClickListener() {
@@ -255,6 +213,102 @@ public class WidgetConfigurationActivity extends Activity {
         });
     }
 
+
+
+    private void showColorPicker(boolean isBgColor) {
+        int initialColor = isBgColor ? bgColor : textColor;
+
+        // Build dialog layout programmatically
+        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
+        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+        int pad = dpToPx(16);
+        layout.setPadding(pad, pad, pad, pad);
+
+        // Color preview
+        android.view.View preview = new android.view.View(this);
+        android.widget.LinearLayout.LayoutParams previewParams =
+            new android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(60));
+        previewParams.bottomMargin = dpToPx(12);
+        preview.setLayoutParams(previewParams);
+        preview.setBackgroundColor(initialColor);
+
+        // R slider
+        android.widget.TextView tvR = new android.widget.TextView(this);
+        tvR.setText("R: " + android.graphics.Color.red(initialColor));
+        android.widget.SeekBar sbR = new android.widget.SeekBar(this);
+        sbR.setMax(255);
+        sbR.setProgress(android.graphics.Color.red(initialColor));
+
+        // G slider
+        android.widget.TextView tvG = new android.widget.TextView(this);
+        tvG.setText("G: " + android.graphics.Color.green(initialColor));
+        android.widget.SeekBar sbG = new android.widget.SeekBar(this);
+        sbG.setMax(255);
+        sbG.setProgress(android.graphics.Color.green(initialColor));
+
+        // B slider
+        android.widget.TextView tvB = new android.widget.TextView(this);
+        tvB.setText("B: " + android.graphics.Color.blue(initialColor));
+        android.widget.SeekBar sbB = new android.widget.SeekBar(this);
+        sbB.setMax(255);
+        sbB.setProgress(android.graphics.Color.blue(initialColor));
+
+        // A slider
+        android.widget.TextView tvA = new android.widget.TextView(this);
+        tvA.setText("A: " + android.graphics.Color.alpha(initialColor));
+        android.widget.SeekBar sbA = new android.widget.SeekBar(this);
+        sbA.setMax(255);
+        sbA.setProgress(android.graphics.Color.alpha(initialColor));
+
+        layout.addView(preview);
+        layout.addView(tvR); layout.addView(sbR);
+        layout.addView(tvG); layout.addView(sbG);
+        layout.addView(tvB); layout.addView(sbB);
+        layout.addView(tvA); layout.addView(sbA);
+
+        android.widget.SeekBar.OnSeekBarChangeListener listener = new android.widget.SeekBar.OnSeekBarChangeListener() {
+            @Override public void onStartTrackingTouch(android.widget.SeekBar s) {}
+            @Override public void onStopTrackingTouch(android.widget.SeekBar s) {}
+            @Override
+            public void onProgressChanged(android.widget.SeekBar s, int progress, boolean fromUser) {
+                int color = android.graphics.Color.argb(
+                    sbA.getProgress(), sbR.getProgress(), sbG.getProgress(), sbB.getProgress());
+                preview.setBackgroundColor(color);
+                tvR.setText("R: " + sbR.getProgress());
+                tvG.setText("G: " + sbG.getProgress());
+                tvB.setText("B: " + sbB.getProgress());
+                tvA.setText("A: " + sbA.getProgress());
+            }
+        };
+        sbR.setOnSeekBarChangeListener(listener);
+        sbG.setOnSeekBarChangeListener(listener);
+        sbB.setOnSeekBarChangeListener(listener);
+        sbA.setOnSeekBarChangeListener(listener);
+
+        new android.app.AlertDialog.Builder(this)
+            .setTitle(isBgColor ? "Background Color" : "Text Color")
+            .setView(layout)
+            .setPositiveButton("OK", (dialog, which) -> {
+                int color = android.graphics.Color.argb(
+                    sbA.getProgress(), sbR.getProgress(), sbG.getProgress(), sbB.getProgress());
+                if (isBgColor) {
+                    bgColor = color;
+                    btnBgColor.setBackgroundColor(color);
+                    btnTextColor.setBackgroundColor(color);
+                } else {
+                    textColor = color;
+                    btnBgColor.setTextColor(color);
+                    btnTextColor.setTextColor(color);
+                }
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
     private void completeActivity() {
         SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         try {
