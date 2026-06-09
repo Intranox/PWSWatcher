@@ -44,10 +44,6 @@ public class WidgetSmallConfigurationActivity extends Activity {
     private ListView lvSources;
     private SeekBar sbFontSize;
     private TextView tvFontSize;
-    private CheckBox cbHumidity;
-    private CheckBox cbPressure;
-    private CheckBox cbRain;
-    private CheckBox cbWindSpeed;
     private Button btnBgColor;
     private Button btnTextColor;
     private Button btnConfirm;
@@ -148,19 +144,11 @@ public class WidgetSmallConfigurationActivity extends Activity {
 
             this.sbFontSize = findViewById(R.id.sb_fontsize);
             this.tvFontSize = findViewById(R.id.tv_fontsize);
-            this.cbHumidity = findViewById(R.id.cb_humidity);
-            this.cbPressure = findViewById(R.id.cb_pressure);
-            this.cbRain = findViewById(R.id.cb_rain);
-            this.cbWindSpeed = findViewById(R.id.cb_windspeed);
+            // widget_small_settings has no checkboxes
             
             if(widgetSettingsRaw != null) {
                 try{
                     JSONObject widgetSettings = new JSONObject(widgetSettingsRaw);
-
-                    this.cbHumidity.setChecked(widgetSettings.getBoolean("humidityVisible"));
-                    this.cbPressure.setChecked(widgetSettings.getBoolean("pressureVisible"));
-                    this.cbRain.setChecked(widgetSettings.getBoolean("rainVisible"));
-                    this.cbWindSpeed.setChecked(widgetSettings.getBoolean("windspeedVisible"));
 
                     double multiplierValue = widgetSettings.getDouble("fontSizeMultiplier");
                     double[] doubleMultipliers = {0.35, 0.75, 1, 1.25, 1.65};
@@ -315,10 +303,6 @@ public class WidgetSmallConfigurationActivity extends Activity {
             JSONObject root = new JSONObject();
             root.put("source", this.selectedSource.toJSONObject());
             root.put("fontSizeMultiplier", this.multiplier[this.sbFontSize.getProgress()]);
-            root.put("humidityVisible", this.cbHumidity.isChecked());
-            root.put("pressureVisible", this.cbPressure.isChecked());
-            root.put("rainVisible", this.cbRain.isChecked());
-            root.put("windspeedVisible", this.cbWindSpeed.isChecked());
             root.put("bgColor", this.bgColor);
             root.put("textColor", this.textColor);
             sharedPrefs.edit().putString("widget_" + mAppWidgetId, root.toString()).apply();
