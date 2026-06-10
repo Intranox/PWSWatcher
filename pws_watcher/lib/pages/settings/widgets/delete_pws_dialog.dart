@@ -16,8 +16,7 @@ class DeletePWSDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: Theme.of(context).buttonTheme.colorScheme?.background,
-            primary: Theme.of(context).buttonTheme.colorScheme?.primary,
+            foregroundColor: Theme.of(context).primaryColor,
           ),
           child: Text("Yes"),
           onPressed: () => Navigator.of(context).pop(true),

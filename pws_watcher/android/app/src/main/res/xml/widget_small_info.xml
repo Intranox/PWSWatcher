@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.zem.pwswatcher.WidgetSmallConfigurationActivity"
+    android:configure="com.github.intranox.pws_watcher.WidgetConfigurationActivity"
     android:initialKeyguardLayout="@layout/widget_small"
     android:initialLayout="@layout/widget_small"
     android:minWidth="110dp"

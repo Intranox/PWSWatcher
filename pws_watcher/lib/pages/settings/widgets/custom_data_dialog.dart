@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+
 import 'package:pws_watcher/model/custom_data.dart';
 
 enum CustomDataDialogMode { ADD, EDIT }
@@ -50,7 +51,6 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print(Theme.of(context).buttonTheme.colorScheme);
     final double screenWidth = MediaQuery.of(context).size.width;
     final CustomDataDialogMode mode = widget.mode;
 
@@ -130,8 +130,7 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: Theme.of(context).buttonTheme.colorScheme?.background,
-            primary: Theme.of(context).buttonTheme.colorScheme?.primary,
+            foregroundColor: Theme.of(context).primaryColor,
           ),
           child: Text("Close"),
           onPressed: () => Navigator.of(context).pop(),
@@ -151,11 +150,7 @@ class _CustomDataDialogState extends State<CustomDataDialog> {
   // FUNCTIONS
 
   _pickIcon() async {
-    IconData? icon = await showIconPicker(
-      context,
-      iconPackMode: IconPack.material,
-      iconColor: Theme.of(context).primaryColor,
-    );
+    IconData? icon = await FlutterIconPicker.showIconPicker(context);
 
     _icon = icon;
     setState(() {});

@@ -37,7 +37,7 @@ class _WidgetSettingsCardState extends State<WidgetSettingsCard> {
               child: Text(
                 "Widget",
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
             Row(
@@ -47,7 +47,7 @@ class _WidgetSettingsCardState extends State<WidgetSettingsCard> {
                   "Widget refresh interval (min):",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Container(
                   margin: EdgeInsets.only(
@@ -56,7 +56,7 @@ class _WidgetSettingsCardState extends State<WidgetSettingsCard> {
                   child: Text(
                     '${refreshInterval.toInt()}',
                     maxLines: 1,
-                    style: Theme.of(context).textTheme.subtitle1,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
               ],
@@ -69,7 +69,7 @@ class _WidgetSettingsCardState extends State<WidgetSettingsCard> {
                     data: SliderThemeData(
                       valueIndicatorTextStyle: Theme.of(context)
                           .textTheme
-                          .bodyText1!
+                          .bodyLarge!
                           .copyWith(color: Colors.white),
                     ),
                     child: Slider(

@@ -19,7 +19,6 @@ dependencies:
 
   # Icons
   flutter_iconpicker: ^3.2.0
-  font_awesome_flutter: ^10.5.0
 
   # Networking / data
   http: 0.13.6
@@ -30,22 +29,26 @@ dependencies:
   # Storage
   hive: 2.2.3
   hive_flutter: 1.1.0
-  shared_preferences: 2.2.0
+  shared_preferences: ^2.0.12
   path_provider: 2.1.1
 
   # Permissions / device
   permission_handler: 10.4.3
-  image_downloader: 0.31.0
   url_launcher: 6.1.14
-  launch_review: 5.0.0
+  in_app_review: 2.0.9
 
   # Utils
   intl: 0.18.1
   provider: 6.0.5
   get_it: 7.6.4
 
-  # Animations
-  flare_flutter: 3.0.2
+
+
+dependency_overrides:
+  # flutter_iconpicker pulls font_awesome_flutter as transitive dep.
+  # 10.9.0 uses Color.withValues() which requires Flutter 3.27+.
+  # Force 10.7.0 which is compatible with Flutter 3.24.x.
+  font_awesome_flutter: 10.7.0
 
 dev_dependencies:
   flutter_test:
@@ -61,5 +64,4 @@ flutter:
     - assets/
     - assets/images/
     - assets/images/current_weather/
-    - assets/flare/
     - assets/values.json

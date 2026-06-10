@@ -31,10 +31,12 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    namespace "com.github.intranox.pws_watcher"
     compileSdkVersion 34
 
     lintOptions {
         disable 'InvalidPackage'
+        disable 'UnspecifiedImmutableFlag'
     }
 
     defaultConfig {
@@ -48,17 +50,22 @@ android {
 
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias'] != null ? keystoreProperties['keyAlias'] : "key"
-            keyPassword keystoreProperties['keyPassword'] != null ? keystoreProperties['keyPassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
-            storeFile file("../../key.jks")
-            storePassword keystoreProperties['storePassword'] != null ? keystoreProperties['storePassword'] : System.getenv("UPLOAD_KEY_PASSWORD")
+            def keyFile = file("../../key.jks")
+            if (keyFile.exists()) {
+                keyAlias        keystoreProperties['keyAlias']    ?: System.getenv("KEYSTORE_ALIAS")    ?: "key"
+                keyPassword     keystoreProperties['keyPassword'] ?: System.getenv("KEYSTORE_KEY_PASS") ?: System.getenv("KEYSTORE_PASS")
+                storeFile       keyFile
+                storePassword   keystoreProperties['storePassword'] ?: System.getenv("KEYSTORE_PASS")
+            }
         }
     }
 
     buildTypes {
         release {
-            //signingConfig signingConfigs.debug
-            signingConfig signingConfigs.release
+            // Use release signing if key.jks exists, otherwise fall back to debug
+            def keyFile = file("../../key.jks")
+            signingConfig keyFile.exists() ? signingConfigs.release : signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
